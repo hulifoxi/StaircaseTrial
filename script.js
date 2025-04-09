@@ -1314,25 +1314,6 @@ async function nextFloor() {
     // 移除结束游戏检查，这个应该在 confirmClimbing 或其他地方处理
 }
 
-// 修改 nextFloor 按钮的事件监听器
-document.getElementById('nextFloor').addEventListener('click', () => {
-    // 根据按钮当前的文本决定行为
-    const buttonText = document.getElementById('nextFloor').textContent;
-    if (buttonText === '获取上楼方式') {
-        console.log("[Next Floor Button] Clicked '获取上楼方式'");
-        assignClimbingTask();
-    } else if (buttonText === '前往下一层') {
-        console.log("[Next Floor Button] Clicked '前往下一层'");
-        nextFloor(); // 调用只处理普通楼层递增的 nextFloor
-    } else {
-        console.warn("[Next Floor Button] Unknown button text:", buttonText);
-    }
-});
-
-// 移除旧的 nextFloor 函数定义（如果存在重复）
-// async function nextFloor() { ... (旧的包含爬楼逻辑的定义) ... }
-// (确保只有一个 nextFloor 函数定义，即只处理普通楼层的那个)
-
 // 初始化整个应用程序
 function initializeApp() {
     console.log('Initializing application...');
