@@ -30,11 +30,46 @@ header {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #555;
+    margin-bottom: 30px; /* 给 header 底部留出空间 */
+}
+
+.header-content {
+    display: flex;
+    align-items: baseline; /* 基线对齐 */
+    justify-content: center; /* 居中 */
+    gap: 15px; /* 标题和副标题之间的间距 */
+    flex-wrap: wrap; /* 允许在小屏幕上换行 */
+    margin-bottom: 10px; /* 大幅减小底部间距 */
 }
 
 header h1 {
-    font-size: 1.8em;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    margin-bottom: 0; /* 移除 h1 的底部边距 */
+    font-size: 2.2em; /* 稍微缩小主标题以适应布局 */
+    text-align: left; /* 恢复左对齐，因为 flex 会处理居中 */
+}
+
+header .subtitle {
+    margin-top: 0; /* 移除之前的负边距 */
+    margin-bottom: 0;
+    font-size: 1em; /* 稍微增大字体 */
+}
+
+header .subtitle a {
+    color: var(--accent-secondary);
+    text-decoration: underline; /* 始终显示下划线 */
+    text-decoration-style: dotted; /* 使用点状下划线 */
+    text-underline-offset: 3px; /* 下划线与文字的距离 */
+    font-weight: bold;
+    padding: 2px 4px; /* 增加一点内边距，像个按钮 */
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+header .subtitle a:hover {
+    color: var(--bg-dark);
+    background-color: var(--accent-primary); /* 悬停时改变背景色 */
+    text-decoration-style: solid; /* 悬停时实线下划线 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .score-display {
@@ -179,15 +214,6 @@ button:hover {
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-#completeTask {
-    background-color: #ffc107;
-    color: #333;
-}
-
-#skipTask {
-    background-color: #dc3545;
-}
-
 #diceResult {
     font-size: 2.5em;
     text-align: center;
@@ -287,16 +313,10 @@ button:hover {
 
 .start-actions {
     display: flex;
-    justify-content: center;
-    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     margin-top: 30px;
-}
-
-.start-button {
-    background-color: #ffc107;
-    color: #333;
-    font-size: 1.2em;
-    padding: 15px 30px;
 }
 
 .rules-button {
@@ -482,20 +502,35 @@ main > section {
 
 /* 商店页面特定样式 */
 .shop-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    background-color: #444; /* 与商店项目背景稍有区分 */
+    display: flex; 
+    flex-direction: row; /* 改为水平排列 */
+    justify-content: space-between; /* 标题区域和积分显示两端对齐 */
+    align-items: flex-start; /* 顶部对齐 */
+    margin-bottom: 10px;
+    background-color: #444;
     padding: 10px 15px;
     border-radius: 4px;
     border: 1px solid #666;
+    position: relative; /* 为绝对定位提供参考 */
+}
+
+/* 标题和通知的容器 */
+.shop-header-content {
+    flex: 1;
 }
 
 .shop-header h2 {
     color: #eee;
     margin: 0;
     font-size: 1.5em;
+}
+
+.shop-header .score-display {
+    /* 移除之前的align-self和margin设置 */
+    background-color: #555;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #666;
 }
 
 .buy-clothing {
@@ -906,24 +941,25 @@ main > section {
 }
 
 /* 库存使用按钮样式 */
-.use-button {
-    padding: 3px 8px;
-    font-size: 0.9em;
-    cursor: pointer;
-    background-color: #007bff; /* 蓝色 */
+#inventory .inventory-item .use-button {
+    /* Apply base button styles implicitly or explicitly if needed */
+    /* Inherits padding, font-size etc. from .button if added to HTML */
+     /* Explicitly set variant colors */
+    background-color: var(--accent-secondary);
     color: white;
-    border: none;
-    border-radius: 3px;
-    margin-left: auto; /* 将按钮推到右侧 */
+    min-width: auto; /* Override general button min-width */
+    padding: 4px 10px; /* Smaller padding for inventory button */
+    font-size: 0.85em;
 }
 
-.use-button:hover {
-    background-color: #0056b3;
+#inventory .inventory-item .use-button:hover:not(:disabled) {
+    background-color: #138496; /* Darker cyan on hover */
 }
 
-.use-button:disabled {
-    background-color: #6c757d; /* 灰色 */
-    cursor: not-allowed;
+#inventory .inventory-item .use-button:disabled {
+     background-color: var(--disabled);
+     color: var(--text-secondary);
+     /* Inherits other disabled styles from .button if class is added */
 }
 
 .back-button.ready-to-start {
@@ -988,3 +1024,144 @@ main > section {
 }
 
 /* 返回按钮通用样式已存在，无需重复 */
+
+/* Remove Old Button Styles */
+
+/* Keep .button, .button-primary, .button-secondary, .button-success, .button-info, .button-danger base styles */
+
+/* Remove specific old styles like: */
+/* .start-button { ... } */
+/* .rules-button { ... } */
+/* .back-button { ... } (Keep .ready-to-start variant) */
+/* .buy-button { ... } (Remove base button-like styles, keep if used for layout) */
+/* #completeTask { background-color: ...; color: ...; } */
+/* #skipTask { background-color: ...; } */
+/* #rollDice { background-color: ...; display: block; margin: 0 auto; } */
+/* #closeModal { background-color: ...; display: block; margin: 10px auto 0 auto; } */
+/* .game-button { padding: ...; font-size: ...; background-color: ...; } */
+/* .next-floor-button { background-color: ...; color: ...; } */
+/* .restart-button { background-color: ...; color: ...; padding: ...; } */
+/* .history-button { background-color: ...; padding: ...; } */
+/* .confirm-button { padding: ...; font-size: ...; } */
+/* #confirmYes { background-color: ...; } */
+/* #confirmYes:hover { ... } */
+/* #confirmNo { background-color: ...; } */
+/* #confirmNo:hover { ... } */
+/* #alertConfirm { background-color: ...; } */
+/* #alertConfirm:hover { ... } */
+
+/* Keep the .ready-to-start variant for the adventure button */
+.button.ready-to-start { /* Ensure it uses the base .button class now */
+    background-color: var(--success); /* Use success color variable */
+    color: white;
+}
+
+.button.ready-to-start:hover:not(:disabled) {
+    background-color: #218838; /* Darker green */
+}
+
+/* Keep the inventory use button styles we just added */
+#inventory .inventory-item .use-button {
+    /* Apply base button styles implicitly or explicitly if needed */
+    /* Inherits padding, font-size etc. from .button if added to HTML */
+     /* Explicitly set variant colors */
+    background-color: var(--accent-secondary);
+    color: white;
+    min-width: auto; /* Override general button min-width */
+    padding: 4px 10px; /* Smaller padding for inventory button */
+    font-size: 0.85em;
+}
+
+#inventory .inventory-item .use-button:hover:not(:disabled) {
+    background-color: #138496; /* Darker cyan on hover */
+}
+
+#inventory .inventory-item .use-button:disabled {
+     background-color: var(--disabled);
+     color: var(--text-secondary);
+     /* Inherits other disabled styles from .button if class is added */
+}
+
+/* 特殊按钮样式 - 只影响开始游戏按钮 */
+#startGame {
+    background-color: #ffc107; /* 金色背景 */
+    color: #333; /* 深色文字 */
+    font-size: 1.2em; /* 稍大的字体 */
+    padding: 12px 30px; /* 更宽的内边距 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 更明显的阴影 */
+}
+
+#startGame:hover {
+    background-color: #ffca2c; /* 稍亮的金色 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* 悬停时更大的阴影 */
+}
+
+#startGame:active {
+    background-color: #e0a800; /* 点击时稍深的金色 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 点击时减小阴影 */
+}
+
+/* 商店通知样式 */
+.shop-notice {
+    color: #ff0000;
+    font-size: 0.9em;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-weight: normal;
+    line-height: 1.4;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.text-center {
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+/* 起始楼层设置样式 */
+.starting-floor-setting {
+    margin-bottom: 15px;
+    text-align: center;
+    background-color: #444;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+}
+
+.starting-floor-setting label {
+    color: #ffc107;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.starting-floor-setting input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-size: 1em;
+}
+
+.setting-note {
+    display: block;
+    color: #aaa;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+/* 新增：固定查看规则按钮到右下角 */
+#viewRules {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000; /* 确保在顶层 */
+    border-radius: 8px;
+    padding: 8px 15px; /* 减小内边距 */
+    font-size: 0.9em; /* 减小字体大小 */
+    background-color: #17a2b8; /* 确保有背景色 */
+    color: white; /* 确保有文字颜色 */
+}
