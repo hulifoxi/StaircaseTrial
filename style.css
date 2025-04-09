@@ -1165,3 +1165,9 @@ main > section {
     background-color: #17a2b8; /* 确保有背景色 */
     color: white; /* 确保有文字颜色 */
 }
+
+/* 新增：用于标红警告文本 */
+.warning-text {
+    color: red;
+    font-weight: bold; /* 可以加粗强调 */
+}
