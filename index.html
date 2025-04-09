@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楼道随机挑战</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>楼道随机挑战</h1>
+            <!-- 通用积分显示区域，可以在特定section中添加或修改 -->
+            <div class="score-display" style="display: none;" id="headerScoreDisplay">
+                 <span>当前积分：</span>
+                 <span id="commonScore">0</span>
+             </div>
+        </header>
+
+        <main>
+            <!-- 消息显示区域 -->
+            <div id="message" class="message" style="display: none;"></div>
+
+            <!-- 开始区域 -->
+            <section id="start-section" class="game-section">
+                <div class="game-intro">
+                    <h2>游戏介绍</h2>
+                    <p>在这个独特的游戏中，你将经历一场充满挑战的楼道冒险。通过完成各种任务来获得积分，但要注意：穿得越少，获得的积分越多！</p>
+                    <h3>游戏规则</h3>
+                    <ul>
+                        <li>从1层开始，逐层完成楼内任务和上楼任务</li>
+                        <li>每完成一个任务都会获得积分</li>
+                        <li>穿得越少，获得的羞耻加分越多</li>
+                        <li>完成任务后可能强制脱衣（可用积分保留）</li>
+                        <li>在初始商店购买你的起始装备</li>
+                    </ul>
+                    <h3>准备物品</h3>
+                    <ul>
+                        <li>白袜1双</li>
+                        <li>内裤1条</li>
+                        <li>护膝1副</li>
+                        <li>卫生纸少量</li>
+                    </ul>
+                </div>
+                <div class="start-actions">
+                    <button id="startGame" class="start-button">开始游戏</button>
+                    <button id="viewRules" class="rules-button">查看完整规则</button>
+                </div>
+            </section>
+
+            <!-- 规则显示区域 -->
+            <section id="rules-section" style="display: none;">
+                <div class="rules-content">
+                    <h2>完整游戏规则</h2>
+                    <div class="rules-text">
+                        <h3>初始规则</h3>
+                        <p>玩家从1层开始，逐层经历2个阶段：</p>
+                        <ul>
+                            <li>楼内任务阶段（1-2、4-5、7-8楼）</li>
+                            <li>上楼任务阶段（每次上2楼）</li>
+                        </ul>
+                        <h3>楼内任务阶段</h3>
+                        <p>在1、2、4、5、7、8楼时，玩家需要完成1-2个任务才能继续上楼。
+
+                        <h3>积分机制</h3>
+                        <p>初始积分设定：最大值：27分，最小值：5分</p>
+
+                        <h3>商店系统</h3>
+
+                        <h3>任务得分规则</h3>
+
+
+                        <h3>结局判定</h3>
+                        <ul>
+                            <li>≥35分：自主决定射精方式</li>
+                            <li>25-34分：必须白袜接精，舔精嘴含10秒</li>
+                            <li>15-24分：全裸跪地爆发，精液落地→用身体蹭清+舔完</li>
+                            <li>6-14分：必须将精液射于鞋垫或身上→拍摄→舔净</li>
+                            <li>≤5分：裸体跪顶层+贞操锁入→3天禁射+白袜塞嘴式羞耻返程</li>
+                        </ul>
+                    </div>
+                    <button id="backToStart" class="back-button">返回</button>
+                </div>
+            </section>
+
+            <!-- 商店区域 -->
+            <section id="shop-section" style="display: none;">
+                <div class="shop-header">
+                     <h2>初始商店 - 购买你的起始装备</h2>
+                     <div class="score-display">
+                         <span>可用积分：</span>
+                         <span id="shopScore">0</span>
+                     </div>
+                </div>
+               
+                <div class="shop-items">
+                    <div class="shop-item required-item">
+                        <h3>长裤 <span class="required-badge">必购</span></h3>
+                        <p>遮盖下半身</p>
+                        <p class="price">5 积分</p>
+                        <button class="buy-button buy-clothing" data-item="长裤" data-price="5">购买</button>
+                    </div>
+                    <div class="shop-item">
+                        <h3>上衣</h3>
+                        <p>遮挡上半身</p>
+                        <p class="price">4 积分</p>
+                        <button class="buy-button buy-clothing" data-item="上衣" data-price="4">购买</button>
+                    </div>
+                    <div class="shop-item">
+                        <h3>内裤</h3>
+                        <p>遮挡鸡巴</p>
+                        <p class="price">4 积分</p>
+                        <button class="buy-button buy-clothing" data-item="内裤" data-price="4">购买</button>
+                    </div>
+                    <div class="shop-item">
+                        <h3>白袜</h3>
+                        <p>让脚保持干净</p>
+                        <p class="price">2 积分</p>
+                        <button class="buy-button buy-clothing" data-item="白袜" data-price="2">购买</button>
+                    </div>
+                    <div class="shop-item">
+                        <h3>护膝</h3>
+                        <p>减少膝盖擦伤</p>
+                        <p class="price">2 积分</p>
+                        <button class="buy-button buy-clothing" data-item="护膝" data-price="2">购买</button>
+                    </div>
+                    <div class="shop-item">
+                        <h3>跳过任务券</h3>
+                        <p>任意跳过一次任务</p>
+                        <p class="price">6 积分</p>
+                        <div class="buy-container">
+                            <span id="inventory-count-skip" class="inventory-count">库存: 0</span>
+                            <button class="buy-button buy-item" data-item="skip" data-price="6">购买</button>
+                        </div>
+                    </div>
+                    <div class="shop-item">
+                        <h3>恢复内裤券</h3>
+                        <p>恢复被脱掉的内裤</p>
+                        <p class="price">6 积分</p>
+                        <button class="buy-button buy-clothing" data-item="restore" data-price="6">购买</button>
+                    </div>
+                </div>
+                <div class="shop-actions">
+                    <button id="startAdventure" class="back-button">开始冒险</button>
+                </div>
+            </section>
+
+            <!-- 游戏区域 -->
+            <section id="game-section" style="display: none;">
+                <div class="game-status">
+                    <div class="status-header">
+                        <h3>游戏状态</h3>
+                    </div>
+                    <div class="status-info">
+                        <div class="floor-info">
+                            <span>当前楼层：</span>
+                            <span id="currentFloor">1</span>
+                        </div>
+                        <div class="score-display game-score">
+                            <span>当前积分：</span>
+                            <span id="currentScore">0</span>
+                        </div>
+                    </div>
+                    <div class="clothing-status">
+                        <h3>当前穿着状态</h3>
+                        <div id="clothingItems"></div>
+                    </div>
+                    <div class="inventory">
+                        <h3>库存</h3>
+                        <div id="inventory"></div>
+                    </div>
+                </div>
+                <div class="task-area">
+                    <h2>当前任务</h2>
+                    <div id="currentTask" class="task-info">暂无任务</div>
+                    <div id="climbingInfo" style="display: none;"></div>
+                    <div class="game-controls task-actions">
+                        <button id="completeTask" class="game-button" style="display: none;">完成任务</button>
+                        <button id="nextFloor" class="game-button next-floor-button" style="display: none;">前往下一层</button>
+                        <button id="confirmClimbing" class="game-button" style="display: none;">确认上楼</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 结束区域 -->
+            <section id="end-section" style="display: none;">
+                 <div class="final-score">
+                    <h2>游戏结束</h2>
+                    <p>你的最终得分：<span id="endScore">0</span></p>
+                </div>
+                <div class="ending-result">
+                    <h3>结局</h3>
+                    <div id="endingDescription"></div>
+                </div>
+                <div class="game-stats">
+                    <h3>游戏统计</h3>
+                    <ul>
+                        <li>最高到达楼层：<span id="maxFloorEnd">0</span></li>
+                        <li>完成任务数：<span id="tasksCompletedEnd">0</span></li>
+                        <li>剩余衣物：<span id="remainingClothesEnd">0</span></li>
+                    </ul>
+                </div>
+                <div class="end-actions">
+                    <button id="restartGame" class="restart-button">重新开始</button>
+                    <button id="viewHistory" class="history-button">查看历史记录</button>
+                </div>
+            </section>
+
+            <!-- 历史记录区域 (新增) -->
+            <section id="history-section" style="display: none;">
+                <div class="history-header">
+                    <h2>游戏历史记录</h2>
+                    <button id="backFromHistory" class="back-button">返回结束页</button>
+                </div>
+                <div id="historyList">
+                    <!-- 历史记录将在这里动态加载 -->
+                    <p>暂无历史记录。</p> 
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 通用模态框 -->
+        <div class="modal" id="taskModal">
+            <div class="modal-content">
+                <h2>任务详情</h2>
+                <p id="modalTaskDescription"></p>
+                <button id="closeModal">关闭</button>
+            </div>
+        </div>
+
+        <!-- 自定义警告弹窗 -->
+        <div id="customAlert" class="custom-alert">
+            <div class="custom-alert-content">
+                <button id="alertClose" class="alert-close">×</button>
+                <span id="alertMessage"></span>
+            </div>
+        </div>
+
+        <!-- 自定义确认弹窗 -->
+        <div id="customConfirm" class="custom-confirm" style="display: none;">
+            <div class="custom-confirm-content">
+                <p id="confirmMessage"></p>
+                <div class="confirm-buttons">
+                    <button id="confirmYes" class="confirm-button">是</button>
+                    <button id="confirmNo" class="confirm-button">否</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

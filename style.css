@@ -1,0 +1,990 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #333;
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #444;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+header {
+    background-color: #222;
+    color: #eee;
+    padding: 15px 20px;
+    border-radius: 5px 5px 0 0;
+    margin: -20px -20px 20px -20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #555;
+}
+
+header h1 {
+    font-size: 1.8em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+.score-display {
+    font-size: 1.2em;
+    background-color: #555;
+    color: #ffc107;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.game-status {
+    background-color: #555;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #666;
+    margin-bottom: 20px;
+}
+
+.status-header {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+}
+
+.status-header h3 {
+    color: #ffc107;
+    margin: 0;
+}
+
+.status-info {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.floor-info,
+.score-display.game-score {
+    background-color: #444;
+    padding: 8px 15px;
+    border-radius: 4px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.floor-info span:first-child,
+.score-display span:first-child {
+    color: #ccc;
+}
+
+.clothing-status,
+.inventory {
+    margin-top: 15px;
+}
+
+.clothing-status h3,
+.inventory h3 {
+    color: #ffc107;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #666;
+    padding-bottom: 5px;
+}
+
+/* 衣物状态 */
+#clothingItems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.clothing-item {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #6c757d; /* 默认灰色 (未穿着状态) */
+    color: white; /* 灰色背景用白色文字 */
+    font-size: 0.9em;
+}
+
+/* 添加穿着状态的样式 */
+.clothing-item:not(.removed) { /* 选择没有 .removed 类的元素 */
+    background-color: #28a745; /* 绿色 (穿着状态) */
+    color: white; /* 绿色背景也用白色文字 */
+}
+
+/* 为未穿着的衣物添加删除线 */
+.clothing-item.removed {
+    text-decoration: line-through; 
+    opacity: 0.7; /* 可选：让未穿着的稍微变淡 */
+}
+
+#currentTask {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    min-height: 40px;
+    color: #eee;
+    background-color: #4a4a4a;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.task-name {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 8px;
+    color: #ffc107;
+}
+
+.task-description-text {
+    display: block;
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.5;
+    color: #ddd;
+}
+
+.task-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 15px;
+}
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: all 0.2s ease-in-out;
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#completeTask {
+    background-color: #ffc107;
+    color: #333;
+}
+
+#skipTask {
+    background-color: #dc3545;
+}
+
+#diceResult {
+    font-size: 2.5em;
+    text-align: center;
+    margin: 15px 0;
+    color: #eee;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#rollDice {
+    background-color: #17a2b8;
+    display: block;
+    margin: 0 auto;
+}
+
+.inventory {
+    min-height: 50px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #444;
+    padding: 25px;
+    border-radius: 5px;
+    max-width: 550px;
+    width: 90%;
+    border: 1px solid #666;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+    color: #ccc;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+}
+
+.modal-content p {
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+#closeModal {
+    background-color: #6c757d;
+    display: block;
+    margin: 10px auto 0 auto;
+}
+
+/* 开始页面样式 */
+.start-page {
+    padding: 20px;
+}
+
+.game-intro {
+    background-color: #555;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    border: 1px solid #666;
+}
+
+.game-intro h2 {
+    color: #ffc107;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #666;
+    padding-bottom: 10px;
+}
+
+.game-intro h3 {
+    color: #ddd;
+    margin: 20px 0 10px 0;
+}
+
+.game-intro ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.game-intro li {
+    margin-bottom: 8px;
+    color: #ccc;
+}
+
+.start-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.start-button {
+    background-color: #ffc107;
+    color: #333;
+    font-size: 1.2em;
+    padding: 15px 30px;
+}
+
+.rules-button {
+    background-color: #17a2b8;
+    font-size: 1.2em;
+    padding: 15px 30px;
+}
+
+/* 商店页面样式 */
+.shop-page {
+    padding: 20px;
+}
+
+.shop-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.shop-item {
+    background-color: #555;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #666;
+}
+
+.shop-item h3 {
+    color: #ffc107;
+    margin-bottom: 10px;
+}
+
+.shop-item p {
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.price {
+    color: #ffc107;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.buy-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.inventory-count {
+    font-size: 0.9em;
+    color: #666;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.buy-button {
+    flex: 1;
+}
+
+.shop-actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.back-button {
+    background-color: #6c757d;
+    padding: 10px 30px;
+}
+
+/* 游戏页面新增样式 */
+.game-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.next-floor-button {
+    background-color: #ffc107;
+    color: #333;
+}
+
+/* 结束页面样式 */
+.end-page {
+    padding: 20px;
+}
+
+.final-score {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.final-score h2 {
+    color: #ffc107;
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.final-score p {
+    font-size: 1.5em;
+    color: #ddd;
+}
+
+.ending-result {
+    background-color: #555;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    border: 1px solid #666;
+}
+
+.ending-result h3 {
+    color: #ffc107;
+    margin-bottom: 15px;
+}
+
+#endingDescription {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.game-stats {
+    background-color: #555;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    border: 1px solid #666;
+}
+
+.game-stats h3 {
+    color: #ffc107;
+    margin-bottom: 15px;
+}
+
+.game-stats ul {
+    list-style: none;
+}
+
+.game-stats li {
+    color: #ddd;
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.game-stats li:before {
+    content: "•";
+    color: #ffc107;
+    position: absolute;
+    left: 0;
+}
+
+.end-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.restart-button {
+    background-color: #ffc107;
+    color: #333;
+    padding: 15px 30px;
+}
+
+.history-button {
+    background-color: #17a2b8;
+    padding: 15px 30px;
+}
+
+/* 页面区域控制 */
+main > section {
+    /* 默认隐藏所有区域，JS会控制显示 */
+    display: none; 
+}
+
+#start-section {
+     /* 初始显示开始区域 */
+    display: block; 
+}
+
+/* 商店页面特定样式 */
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #444; /* 与商店项目背景稍有区分 */
+    padding: 10px 15px;
+    border-radius: 4px;
+    border: 1px solid #666;
+}
+
+.shop-header h2 {
+    color: #eee;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.buy-clothing {
+     background-color: #28a745; /* 衣物购买按钮颜色 */
+}
+.buy-item {
+     background-color: #17a2b8; /* 券类购买按钮颜色 */
+}
+
+/* 游戏页面特定样式 */
+.game-score {
+    /* 调整游戏内积分显示位置或样式 */
+     background-color: #555;
+     color: #ffc107; 
+     padding: 8px 18px;
+     border-radius: 4px;
+     font-weight: bold;
+     text-align: right;
+}
+
+/* 规则显示区域样式 */
+#rules-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #555;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+#rules-section h2 {
+    color: #ffc107;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #666;
+    padding-bottom: 10px;
+}
+
+#rules-section h3 {
+    color: #ffc107;
+    margin: 25px 0 15px;
+    font-size: 1.3em;
+    border-left: 4px solid #ffc107;
+    padding-left: 10px;
+}
+
+#rules-section p {
+    color: #ddd;
+    line-height: 1.6;
+    margin: 10px 0;
+    padding-left: 14px;
+}
+
+#rules-section ul {
+    list-style-type: none;
+    padding-left: 14px;
+    margin: 10px 0;
+}
+
+#rules-section li {
+    color: #ddd;
+    margin: 8px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+#rules-section li:before {
+    content: "•";
+    color: #ffc107;
+    position: absolute;
+    left: 0;
+}
+
+#rules-section .rules-content {
+    background-color: #444;
+    padding: 20px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+#rules-section .back-button {
+    display: block;
+    width: 200px;
+    margin: 30px auto 0;
+    padding: 12px 24px;
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#rules-section .back-button:hover {
+    background-color: #ffca2c;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+#rules-section .back-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.required-item {
+    border: 2px solid #ff4444;
+    position: relative;
+}
+
+.required-badge {
+    background-color: #ff4444;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
+
+/* 自定义警告弹窗样式 (顶部通知样式) */
+.custom-alert {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2000;
+    padding: 10px;
+    pointer-events: none;
+}
+
+.custom-alert-content {
+    background-color: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    margin: 10px auto 0 auto;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
+    animation: slideDown 0.4s ease-out forwards;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert-close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    pointer-events: auto;
+}
+
+.alert-close:hover {
+    color: white;
+    transform: translateY(-50%);
+}
+
+#alertMessage {
+    display: block;
+    padding-right: 30px;
+    font-size: 1em;
+    color: #eee;
+    margin: 0;
+}
+
+#alertConfirm {
+    background-color: #5cb85c; /* 更柔和的绿色 */
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 5px;
+    transition: background-color 0.2s ease;
+}
+
+#alertConfirm:hover {
+    background-color: #4cae4c;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 自定义确认弹窗样式 */
+.custom-confirm {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.custom-confirm-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    width: 300px;
+    text-align: center;
+}
+
+#confirmMessage {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    white-space: pre-line;
+    color: #333;
+}
+
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.confirm-button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+#confirmYes {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#confirmYes:hover {
+    background-color: #45a049;
+}
+
+#confirmNo {
+    background-color: #f44336;
+    color: white;
+}
+
+#confirmNo:hover {
+    background-color: #da190b;
+}
+
+/* 消息显示区域样式 */
+.message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.task-description {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 40px; /* 确保有最小高度 */
+}
+
+/* 上楼方式显示区域样式 */
+.climbing-info {
+    background-color: #555; /* 深灰色背景 */
+    color: #eee; /* 浅色文字 */
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px; /* 与任务信息保持间距 */
+    border: 1px solid #666; /* 边框 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 轻微阴影 */
+}
+
+.climbing-info h4 {
+    margin-top: 0;
+    color: #ffc107; /* 标题颜色 */
+    border-bottom: 1px solid #777;
+    padding-bottom: 5px;
+}
+
+.climbing-info p {
+    margin-bottom: 0;
+    line-height: 1.6; /* 行高 */
+}
+
+/* 游戏控制按钮 */
+.game-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; /* 居中按钮 */
+    gap: 15px; /* 按钮间距 */
+}
+
+.game-button {
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background-color: #007bff; /* 默认蓝色 */
+    transition: background-color 0.3s ease;
+}
+
+.game-button:hover {
+    background-color: #0056b3;
+}
+
+.game-button:disabled {
+    background-color: #6c757d; /* 禁用状态灰色 */
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#completeTask {
+    background-color: #28a745; /* 绿色 */
+}
+#completeTask:hover {
+    background-color: #218838;
+}
+
+#skipTask {
+    background-color: #ffc107; /* 黄色 */
+    color: #333; /* 深色文字 */
+}
+#skipTask:hover {
+    background-color: #e0a800;
+}
+
+#nextFloor {
+    background-color: #17a2b8; /* 青色 */
+}
+#nextFloor:hover {
+    background-color: #117a8b;
+}
+
+/* 特别处理按钮隐藏时的样式，防止影响布局 */
+.game-button[style*="display: none"] {
+    /* 保持占位或完全移除，根据需要调整 */
+    /* visibility: hidden; */ 
+    /* 或者如果希望完全不占空间 */
+     display: none !important; 
+}
+
+/* 任务信息 */
+.task-info {
+    background-color: #444;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 40px; /* 确保有最小高度 */
+}
+
+/* 库存区域样式 */
+.inventory {
+    margin-top: 15px;
+}
+
+.inventory h3 {
+    margin-bottom: 5px;
+}
+
+.inventory-item {
+    margin-bottom: 5px;
+    display: flex; /* 让按钮和文本在同一行 */
+    align-items: center; /* 垂直居中 */
+    gap: 10px; /* 文本和按钮之间的间距 */
+}
+
+/* 库存使用按钮样式 */
+.use-button {
+    padding: 3px 8px;
+    font-size: 0.9em;
+    cursor: pointer;
+    background-color: #007bff; /* 蓝色 */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    margin-left: auto; /* 将按钮推到右侧 */
+}
+
+.use-button:hover {
+    background-color: #0056b3;
+}
+
+.use-button:disabled {
+    background-color: #6c757d; /* 灰色 */
+    cursor: not-allowed;
+}
+
+.back-button.ready-to-start {
+    background-color: #28a745; /* 绿色背景表示可以开始 */
+    color: white;
+}
+
+.back-button.ready-to-start:hover {
+    background-color: #218838; /* 悬停时深绿色 */
+}
+
+/* 历史记录区域样式 */
+#history-section {
+    padding: 20px;
+    background-color: #444;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #666;
+}
+
+#history-section h2 {
+    color: #ffc107;
+    margin: 0;
+}
+
+#historyList {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px; /* 为滚动条留出空间 */
+}
+
+.history-item {
+    background-color: #555;
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.history-item p {
+    margin: 5px 0;
+    color: #ddd;
+    line-height: 1.5;
+}
+
+.history-item .timestamp {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.history-item strong {
+    color: #ffc107;
+}
+
+/* 返回按钮通用样式已存在，无需重复 */
