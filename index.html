@@ -31,7 +31,10 @@
                     <p class="warning-text">本游戏仅为模拟游戏，请尊重当地法律法规执行任务</p>
                     <p class="warning-text">游玩本游戏即视为你同意：本游戏对你造成的任何生理与心理伤害均与作者无关</p>
                     <p>在这个独特的游戏中，你将经历一场充满挑战的楼道冒险</p>
-                    <h3>游戏规则</h3>
+                    <div class="rules-header">
+                        <h3>游戏规则</h3>
+                        <button id="viewRules" class="rules-button small-button">查看完整规则</button>
+                    </div>
                     <ul>
                         <li>从1层开始，逐层完成楼内任务和上楼任务</li>
                         <li>每完成一个任务都会获得积分</li>
@@ -56,7 +59,6 @@
                         <span class="setting-note">（可选择从任意楼层开始）</span>
                     </div>
                     <button id="startGame" class="start-button">开始游戏</button>
-                    <button id="viewRules" class="rules-button">查看完整规则</button>
                 </div>
             </section>
 
@@ -113,10 +115,10 @@
                          <h2>初始商店 - 购买你的起始装备</h2>
                          <p class="shop-notice">只穿商店购买了的衣物出门（不穿鞋），没购买的衣物手上拿着，部分任务会用到</p>
                      </div>
-                     <div class="score-display">
-                         <span>可用积分：</span>
-                         <span id="shopScore">0</span>
-                     </div>
+                </div>
+                <div class="score-display shop-score-standalone">
+                    <span>可用积分：</span>
+                    <span id="shopScore">0</span>
                 </div>
                
                 <div class="shop-items">
@@ -162,8 +164,8 @@
                     <div class="shop-item">
                         <h3>恢复内裤券</h3>
                         <p>恢复被脱掉的内裤</p>
-                        <p class="price">6 积分</p>
-                        <button class="buy-button buy-clothing" data-item="restore" data-price="6">购买</button>
+                        <p class="price">8 积分</p>
+                        <button class="buy-button buy-clothing" data-item="restore" data-price="8">购买</button>
                     </div>
                 </div>
                 <div class="shop-actions">
@@ -178,7 +180,7 @@
                         <h3>游戏状态</h3>
                     </div>
                     <div class="status-info">
-                        <div class="floor-info">
+                        <div class="floor-info score-display">
                             <span>当前楼层：</span>
                             <span id="currentFloor">1</span>
                         </div>
@@ -206,6 +208,22 @@
                         <button id="confirmClimbing" class="game-button" style="display: none;">确认上楼</button>
                     </div>
                 </div>
+
+                <!-- Progress Section -->
+                <div id="progress-section" class="progress-section">
+                    <h3>游戏进度</h3>
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="progressLabels" class="progress-labels">
+                        <span class="progress-marker" style="left: 0%;" title="开始">开始</span>
+                        <span class="progress-marker" style="left: 23%;" title="简单">简单</span>
+                        <span class="progress-marker" style="left: 50%;" title="中等">中等</span>
+                        <span class="progress-marker" style="left: 78%;" title="困难">困难</span>
+                        <span class="progress-marker" style="right: 0%; transform: translateX(0);" title="终局">终局</span>
+                    </div>
+                </div>
+
             </section>
 
             <!-- 结束区域 -->
@@ -255,14 +273,6 @@
             </div>
         </div>
 
-        <!-- 自定义警告弹窗 -->
-        <div id="customAlert" class="custom-alert">
-            <div class="custom-alert-content">
-                <button id="alertClose" class="alert-close">×</button>
-                <span id="alertMessage"></span>
-            </div>
-        </div>
-
         <!-- 自定义确认弹窗 -->
         <div id="customConfirm" class="custom-confirm" style="display: none;">
             <div class="custom-confirm-content">
@@ -273,6 +283,10 @@
                 </div>
             </div>
         </div>
+
+        <!-- 新增：动态警告消息容器 -->
+        <div id="alertContainer"></div>
+
     </div>
     <script src="script.js"></script>
 </body>

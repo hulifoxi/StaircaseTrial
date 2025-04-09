@@ -1,614 +1,438 @@
+/* ===== Global Styles & Variables ===== */
+:root {
+    --bg-primary: #282c34;        /* 深灰背景 */
+    --bg-secondary: #3a3f4a;      /* 稍浅的容器背景 */
+    --bg-tertiary: #4a4e5a;       /* 更浅的元素背景 */
+    --border-color: #4f5561;      /* 边框颜色 */
+    --text-primary: #abb2bf;      /* 主要文字颜色 (浅灰) */
+    --text-secondary: #888e9a;    /* 次要文字颜色 (灰色) */
+    --accent-primary: #ffab40;    /* 主强调色 (橙黄) */
+    --accent-secondary: #61dafb;  /* 次强调色 (浅蓝) */
+    --success: #98c379;          /* 成功色 (绿) */
+    --danger: #e06c75;           /* 危险/警告色 (红) */
+    --warning: #e5c07b;          /* 警告色 (黄) */
+    --info: #56b6c2;            /* 信息色 (青) */
+    --disabled: #5c6370;         /* 禁用状态颜色 */
+
+    --border-radius-small: 4px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 12px;
+
+    --box-shadow-light: 0 2px 5px rgba(0, 0, 0, 0.15);
+    --box-shadow-medium: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 body {
-    font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #333;
-    color: #ddd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
+    padding: 20px;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 20px auto;
-    padding: 20px;
-    background-color: #444;
-    border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    background-color: var(--bg-secondary);
+    padding: 25px;
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-medium);
+    border: 1px solid var(--border-color);
 }
 
 header {
-    background-color: #222;
-    color: #eee;
-    padding: 15px 20px;
-    border-radius: 5px 5px 0 0;
-    margin: -20px -20px 20px -20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #555;
-    margin-bottom: 30px; /* 给 header 底部留出空间 */
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .header-content {
-    display: flex;
-    align-items: baseline; /* 基线对齐 */
-    justify-content: center; /* 居中 */
-    gap: 15px; /* 标题和副标题之间的间距 */
-    flex-wrap: wrap; /* 允许在小屏幕上换行 */
-    margin-bottom: 10px; /* 大幅减小底部间距 */
+    /* Add margin for desktop view offset */
+    margin-top: 10px;
+    margin-left: 20px; /* Increase right offset */
 }
 
-header h1 {
-    margin-bottom: 0; /* 移除 h1 的底部边距 */
-    font-size: 2.2em; /* 稍微缩小主标题以适应布局 */
-    text-align: left; /* 恢复左对齐，因为 flex 会处理居中 */
-}
-
-header .subtitle {
-    margin-top: 0; /* 移除之前的负边距 */
-    margin-bottom: 0;
-    font-size: 1em; /* 稍微增大字体 */
-}
-
-header .subtitle a {
+.header-content h1 {
     color: var(--accent-secondary);
-    text-decoration: underline; /* 始终显示下划线 */
-    text-decoration-style: dotted; /* 使用点状下划线 */
-    text-underline-offset: 3px; /* 下划线与文字的距离 */
-    font-weight: bold;
-    padding: 2px 4px; /* 增加一点内边距，像个按钮 */
-    border-radius: 3px;
-    transition: all 0.2s ease;
+    font-size: 2.2em;
+    margin-bottom: 5px;
 }
 
-header .subtitle a:hover {
-    color: var(--bg-dark);
-    background-color: var(--accent-primary); /* 悬停时改变背景色 */
-    text-decoration-style: solid; /* 悬停时实线下划线 */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.score-display {
-    font-size: 1.2em;
-    background-color: #555;
-    color: #ffc107;
-    padding: 8px 18px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.game-status {
-    background-color: #555;
-    padding: 15px;
-    border-radius: 4px;
-    border: 1px solid #666;
-    margin-bottom: 20px;
-}
-
-.status-header {
-    margin-bottom: 15px;
-    border-bottom: 1px solid #666;
-    padding-bottom: 10px;
-}
-
-.status-header h3 {
-    color: #ffc107;
-    margin: 0;
-}
-
-.status-info {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.floor-info,
-.score-display.game-score {
-    background-color: #444;
-    padding: 8px 15px;
-    border-radius: 4px;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.floor-info span:first-child,
-.score-display span:first-child {
-    color: #ccc;
-}
-
-.clothing-status,
-.inventory {
-    margin-top: 15px;
-}
-
-.clothing-status h3,
-.inventory h3 {
-    color: #ffc107;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #666;
-    padding-bottom: 5px;
-}
-
-/* 衣物状态 */
-#clothingItems {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 15px;
-}
-
-.clothing-item {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #6c757d; /* 默认灰色 (未穿着状态) */
-    color: white; /* 灰色背景用白色文字 */
+.header-content .subtitle {
+    color: var(--text-secondary);
     font-size: 0.9em;
 }
 
-/* 添加穿着状态的样式 */
-.clothing-item:not(.removed) { /* 选择没有 .removed 类的元素 */
-    background-color: #28a745; /* 绿色 (穿着状态) */
-    color: white; /* 绿色背景也用白色文字 */
+.header-content .subtitle a {
+    color: var(--accent-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-/* 为未穿着的衣物添加删除线 */
-.clothing-item.removed {
-    text-decoration: line-through; 
-    opacity: 0.7; /* 可选：让未穿着的稍微变淡 */
+.header-content .subtitle a:hover {
+    color: #8be9fd; /* Lighter accent on hover */
 }
 
-#currentTask {
-    font-size: 1.1em;
-    margin-bottom: 15px;
-    min-height: 40px;
-    color: #eee;
-    background-color: #4a4a4a;
-    padding: 10px;
-    border-radius: 3px;
-}
-
-.task-name {
-    display: block;
+/* Generic Score Display Style */
+.score-display {
+    background-color: var(--bg-tertiary);
+    color: var(--accent-primary);
+    padding: 8px 15px;
+    border-radius: var(--border-radius-medium);
     font-weight: bold;
-    font-size: 1.2em;
+    text-align: right;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-light);
+}
+
+.score-display span {
+    vertical-align: middle;
+}
+
+#commonScore, #shopScore, #currentScore, #endScore {
+    margin-left: 5px;
+    font-size: 1.1em;
+}
+
+main > section {
+    display: none; /* Hide all sections by default */
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-medium);
+    /* margin-top: 20px; */ /* Removed, handled by container padding */
+}
+
+#start-section {
+    display: block; /* Show start section initially */
+}
+
+/* General Headings */
+h2 {
+    color: var(--accent-primary);
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: var(--accent-secondary);
+    margin: 20px 0 10px 0;
+    font-size: 1.4em;
+}
+
+p {
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 15px;
+}
+
+li {
     margin-bottom: 8px;
-    color: #ffc107;
+    padding-left: 20px;
+    position: relative;
 }
 
-.task-description-text {
-    display: block;
-    margin: 0;
-    font-size: 1em;
-    line-height: 1.5;
-    color: #ddd;
+li:before {
+    content: "◆";
+    color: var(--accent-secondary);
+    position: absolute;
+    left: 0;
+    font-size: 0.9em;
+    top: 2px;
 }
 
-.task-actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 15px;
-}
-
-button {
-    padding: 10px 18px;
+/* ===== Button Styles ===== */
+button, .button { /* Added .button for potential future use */
+    display: inline-block;
+    padding: 10px 20px;
     border: none;
-    border-radius: 3px;
+    border-radius: var(--border-radius-medium);
     cursor: pointer;
     font-size: 1em;
     font-weight: bold;
     transition: all 0.2s ease-in-out;
     color: white;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
-}
-
-button:hover {
-    opacity: 0.85;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-#diceResult {
-    font-size: 2.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    background-color: var(--info); /* Default button color */
+    box-shadow: var(--box-shadow-light);
     text-align: center;
-    margin: 15px 0;
-    color: #eee;
-    font-family: 'Courier New', Courier, monospace;
 }
 
-#rollDice {
-    background-color: #17a2b8;
-    display: block;
-    margin: 0 auto;
+button:hover:not(:disabled) {
+    opacity: 0.9;
+    box-shadow: var(--box-shadow-medium);
 }
 
-.inventory {
-    min-height: 50px;
+button:active:not(:disabled) {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    backdrop-filter: blur(3px);
+button:disabled {
+    background-color: var(--disabled);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.7;
+    text-shadow: none;
+    box-shadow: none;
 }
 
-.modal-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #444;
-    padding: 25px;
-    border-radius: 5px;
-    max-width: 550px;
-    width: 90%;
-    border: 1px solid #666;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+/* Button Variants */
+.start-button, #startGame {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    font-size: 1.2em;
+    padding: 12px 30px;
+}
+.start-button:hover:not(:disabled), #startGame:hover:not(:disabled) {
+    background-color: #ffbe6f; /* Lighter orange */
 }
 
-.modal-content h2 {
-    color: #ccc;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #666;
-    padding-bottom: 10px;
+.rules-button, #viewRules, .history-button, #viewHistory {
+    background-color: var(--info);
+}
+.rules-button:hover:not(:disabled), #viewRules:hover:not(:disabled),
+.history-button:hover:not(:disabled), #viewHistory:hover:not(:disabled) {
+    background-color: #7fced9; /* Lighter info */
 }
 
-.modal-content p {
-    color: #ddd;
-    margin-bottom: 20px;
+.back-button, #backToStart, #backFromHistory, #startAdventure {
+    background-color: var(--text-secondary);
+}
+.back-button:hover:not(:disabled), #backToStart:hover:not(:disabled),
+#backFromHistory:hover:not(:disabled), #startAdventure:hover:not(:disabled) {
+    background-color: #9ca5b5; /* Lighter gray */
+}
+
+/* Specific override for disabled startAdventure button text */
+#startAdventure:disabled {
+    color: var(--text-primary); /* Use lighter text for better contrast */
+    /* Background and cursor are inherited from general button:disabled */
+}
+
+#startAdventure.ready-to-start {
+    background-color: var(--success);
+}
+#startAdventure.ready-to-start:hover:not(:disabled) {
+    background-color: #b1d89b; /* Lighter green */
+}
+
+.buy-button {
+    /* Base styles already applied */
+}
+.buy-clothing {
+    background-color: var(--success);
+}
+.buy-clothing:hover:not(:disabled) {
+    background-color: #b1d89b; /* Lighter green */
+}
+.buy-item {
+    background-color: var(--accent-secondary);
+}
+.buy-item:hover:not(:disabled) {
+    background-color: #8be9fd; /* Lighter accent */
+}
+
+.game-button {
+    /* Base styles already applied */
+}
+#completeTask {
+    background-color: var(--success);
+}
+#completeTask:hover:not(:disabled) {
+    background-color: #b1d89b; /* Lighter green */
+}
+#skipTask { /* In inventory, style applied separately */ }
+#nextFloor {
+    background-color: var(--info);
+}
+#nextFloor:hover:not(:disabled) {
+    background-color: #7fced9; /* Lighter info */
+}
+#confirmClimbing {
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+#confirmClimbing:hover:not(:disabled) {
+    background-color: #ffbe6f; /* Lighter orange */
+}
+
+.restart-button, #restartGame {
+    background-color: var(--warning);
+    color: var(--bg-primary);
+    font-size: 1.1em;
+    padding: 12px 25px;
+}
+.restart-button:hover:not(:disabled), #restartGame:hover:not(:disabled) {
+    background-color: #f1d09c; /* Lighter warning */
 }
 
 #closeModal {
-    background-color: #6c757d;
-    display: block;
-    margin: 10px auto 0 auto;
+    background-color: var(--text-secondary);
+}
+#closeModal:hover:not(:disabled) {
+    background-color: #9ca5b5; /* Lighter gray */
 }
 
-/* 开始页面样式 */
-.start-page {
-    padding: 20px;
+.use-button {
+    background-color: var(--accent-secondary);
+    padding: 4px 10px;
+    font-size: 0.85em;
+    min-width: auto;
+    font-weight: normal;
+}
+.use-button:hover:not(:disabled) {
+    background-color: #8be9fd; /* Lighter accent */
 }
 
+/* ===== Start Section ===== */
 .game-intro {
-    background-color: #555;
+    background-color: var(--bg-tertiary);
     padding: 20px;
-    border-radius: 5px;
+    border-radius: var(--border-radius-medium);
     margin-bottom: 30px;
-    border: 1px solid #666;
+    border: 1px solid var(--border-color);
 }
 
-.game-intro h2 {
-    color: #ffc107;
+.rules-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.rules-header h3 {
+    margin: 0;
+}
+
+.rules-header .small-button {
+    margin-left: 10px;
+}
+
+/* Small Button Variant */
+.small-button {
+    padding: 6px 12px;
+    font-size: 0.85em;
+    font-weight: normal;
+}
+
+.warning-text {
+    color: var(--warning);
+    font-weight: bold;
     margin-bottom: 15px;
-    border-bottom: 1px solid #666;
-    padding-bottom: 10px;
-}
-
-.game-intro h3 {
-    color: #ddd;
-    margin: 20px 0 10px 0;
-}
-
-.game-intro ul {
-    margin-left: 20px;
-    margin-bottom: 20px;
-}
-
-.game-intro li {
-    margin-bottom: 8px;
-    color: #ccc;
+    padding: 10px;
+    background-color: rgba(229, 192, 123, 0.1); /* Subtle warning background */
+    border-left: 3px solid var(--warning);
+    border-radius: var(--border-radius-small);
 }
 
 .start-actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column; /* Stack floor selector and buttons vertically */
+    align-items: center; /* Center items */
+    gap: 20px; /* Space between items */
     margin-top: 30px;
 }
 
-.rules-button {
-    background-color: #17a2b8;
-    font-size: 1.2em;
-    padding: 15px 30px;
-}
-
-/* 商店页面样式 */
-.shop-page {
-    padding: 20px;
-}
-
-.shop-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.shop-item {
-    background-color: #555;
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid #666;
-}
-
-.shop-item h3 {
-    color: #ffc107;
-    margin-bottom: 10px;
-}
-
-.shop-item p {
-    color: #ddd;
-    margin-bottom: 10px;
-}
-
-.price {
-    color: #ffc107;
+/* Input/Select Styles */
+label {
+    margin-right: 10px;
+    color: var(--text-secondary);
     font-weight: bold;
-    font-size: 1.2em;
 }
 
-.buy-container {
+input[type="number"],
+select {
+    padding: 8px 12px;
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1em;
+    min-width: 80px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 2px rgba(97, 218, 251, 0.3); /* Subtle focus ring */
+}
+
+.starting-floor-setting, .floor-selector { /* Renamed class for consistency */
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 10px;
+    background-color: var(--bg-tertiary);
+    padding: 15px;
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--box-shadow-light);
 }
 
-.inventory-count {
+.setting-note {
+    margin-left: 15px;
     font-size: 0.9em;
-    color: #666;
-    background-color: #f5f5f5;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+    color: var(--text-secondary);
 }
 
-.buy-button {
-    flex: 1;
+/* Start action button container */
+.start-actions > button {
+    width: 80%;
 }
 
-.shop-actions {
-    text-align: center;
-    margin-top: 30px;
+/* Align starting floor setting box to full width */
+.starting-floor-setting {
+    width: 100%;
+    justify-content: center; /* Center label/input within the box */
 }
 
-.back-button {
-    background-color: #6c757d;
-    padding: 10px 30px;
-}
-
-/* 游戏页面新增样式 */
-.game-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.next-floor-button {
-    background-color: #ffc107;
-    color: #333;
-}
-
-/* 结束页面样式 */
-.end-page {
-    padding: 20px;
-}
-
-.final-score {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.final-score h2 {
-    color: #ffc107;
-    font-size: 2em;
-    margin-bottom: 15px;
-}
-
-.final-score p {
-    font-size: 1.5em;
-    color: #ddd;
-}
-
-.ending-result {
-    background-color: #555;
-    padding: 20px;
-    border-radius: 5px;
-    margin-bottom: 30px;
-    border: 1px solid #666;
-}
-
-.ending-result h3 {
-    color: #ffc107;
-    margin-bottom: 15px;
-}
-
-#endingDescription {
-    color: #ddd;
-    line-height: 1.6;
-}
-
-.game-stats {
-    background-color: #555;
-    padding: 20px;
-    border-radius: 5px;
-    margin-bottom: 30px;
-    border: 1px solid #666;
-}
-
-.game-stats h3 {
-    color: #ffc107;
-    margin-bottom: 15px;
-}
-
-.game-stats ul {
-    list-style: none;
-}
-
-.game-stats li {
-    color: #ddd;
-    margin-bottom: 10px;
-    padding-left: 20px;
-    position: relative;
-}
-
-.game-stats li:before {
-    content: "•";
-    color: #ffc107;
-    position: absolute;
-    left: 0;
-}
-
-.end-actions {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.restart-button {
-    background-color: #ffc107;
-    color: #333;
-    padding: 15px 30px;
-}
-
-.history-button {
-    background-color: #17a2b8;
-    padding: 15px 30px;
-}
-
-/* 页面区域控制 */
-main > section {
-    /* 默认隐藏所有区域，JS会控制显示 */
-    display: none; 
-}
-
-#start-section {
-     /* 初始显示开始区域 */
-    display: block; 
-}
-
-/* 商店页面特定样式 */
-.shop-header {
-    display: flex; 
-    flex-direction: row; /* 改为水平排列 */
-    justify-content: space-between; /* 标题区域和积分显示两端对齐 */
-    align-items: flex-start; /* 顶部对齐 */
-    margin-bottom: 10px;
-    background-color: #444;
-    padding: 10px 15px;
-    border-radius: 4px;
-    border: 1px solid #666;
-    position: relative; /* 为绝对定位提供参考 */
-}
-
-/* 标题和通知的容器 */
-.shop-header-content {
-    flex: 1;
-}
-
-.shop-header h2 {
-    color: #eee;
-    margin: 0;
-    font-size: 1.5em;
-}
-
-.shop-header .score-display {
-    /* 移除之前的align-self和margin设置 */
-    background-color: #555;
-    padding: 5px 10px;
-    border-radius: 4px;
-    border: 1px solid #666;
-}
-
-.buy-clothing {
-     background-color: #28a745; /* 衣物购买按钮颜色 */
-}
-.buy-item {
-     background-color: #17a2b8; /* 券类购买按钮颜色 */
-}
-
-/* 游戏页面特定样式 */
-.game-score {
-    /* 调整游戏内积分显示位置或样式 */
-     background-color: #555;
-     color: #ffc107; 
-     padding: 8px 18px;
-     border-radius: 4px;
-     font-weight: bold;
-     text-align: right;
-}
-
-/* 规则显示区域样式 */
+/* ===== Rules Section ===== */
 #rules-section {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #555;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    max-width: 800px; /* Keep max width */
+    margin: 0 auto; /* Center if needed */
+    background-color: var(--bg-tertiary); /* Slightly different bg for rules */
+    border: 1px solid var(--border-color);
 }
 
 #rules-section h2 {
-    color: #ffc107;
+    color: var(--accent-primary);
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 1.8em;
-    border-bottom: 2px solid #666;
-    padding-bottom: 10px;
+    font-size: 2em;
 }
 
 #rules-section h3 {
-    color: #ffc107;
-    margin: 25px 0 15px;
-    font-size: 1.3em;
-    border-left: 4px solid #ffc107;
+    color: var(--accent-secondary);
+    font-size: 1.5em;
+    border-left: 4px solid var(--accent-secondary);
     padding-left: 10px;
 }
 
-#rules-section p {
-    color: #ddd;
-    line-height: 1.6;
-    margin: 10px 0;
-    padding-left: 14px;
-}
-
-#rules-section ul {
-    list-style-type: none;
-    padding-left: 14px;
-    margin: 10px 0;
-}
-
-#rules-section li {
-    color: #ddd;
-    margin: 8px 0;
-    position: relative;
-    padding-left: 20px;
+#rules-section p, #rules-section li {
+    color: var(--text-primary);
 }
 
 #rules-section li:before {
-    content: "•";
-    color: #ffc107;
-    position: absolute;
-    left: 0;
+    color: var(--accent-primary); /* Match heading */
 }
 
 #rules-section .rules-content {
-    background-color: #444;
-    padding: 20px;
-    border-radius: 6px;
+    background-color: var(--bg-secondary); /* Inner content darker */
+    padding: 25px;
+    border-radius: var(--border-radius-medium);
     margin: 15px 0;
 }
 
@@ -616,367 +440,393 @@ main > section {
     display: block;
     width: 200px;
     margin: 30px auto 0;
-    padding: 12px 24px;
-    background-color: #ffc107;
-    color: #333;
-    border: none;
-    border-radius: 4px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
-#rules-section .back-button:hover {
-    background-color: #ffca2c;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+/* ===== Shop Section ===== */
+.shop-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px; /* Increased margin */
+    background-color: var(--bg-tertiary);
+    padding: 15px 20px;
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--border-color);
+    position: relative;
 }
 
-#rules-section .back-button:active {
-    transform: translateY(0);
-    box-shadow: none;
+.shop-header-content {
+    flex: 1;
+    padding-right: 20px; /* Space between text and score */
+}
+
+.shop-header h2 {
+    color: var(--accent-primary);
+    margin: 0;
+    font-size: 1.6em;
+    border-bottom: none; /* Remove border here */
+    padding-bottom: 0;
+}
+
+.shop-header .score-display {
+    /* Removed: margin-top: 5px; */
+    /* Styles are now handled by .shop-score-standalone */
+}
+
+.shop-score-standalone {
+    /* Inherits base .score-display styles */
+    margin-top: -10px; /* Pull up slightly below the header */
+    margin-bottom: 25px; /* Space before shop items */
+    width: fit-content; /* Shrink to content width */
+    margin-left: auto; /* Push to the right */
+    margin-right: 0; /* Align to the right edge of the container */
+}
+
+.shop-notice {
+    color: var(--warning);
+    font-size: 0.95em;
+    margin-top: 8px;
+    margin-bottom: 0; /* Reduced bottom margin */
+    font-weight: normal;
+    line-height: 1.4;
+    max-width: 100%;
+    word-wrap: break-word;
+    padding: 8px;
+    background-color: rgba(229, 192, 123, 0.1);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--border-radius-small);
+}
+
+.shop-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Adjust min size */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.shop-item {
+    background-color: var(--bg-tertiary);
+    padding: 20px;
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push button to bottom */
+    box-shadow: var(--box-shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shop-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-medium);
+}
+
+.shop-item h3 {
+    color: var(--accent-secondary);
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.shop-item p {
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    flex-grow: 1; /* Allow description to take space */
+}
+
+.price {
+    color: var(--accent-primary);
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 15px; /* Space above button */
+}
+
+.buy-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto; /* Push to bottom if needed */
+}
+
+.inventory-count {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.buy-button {
+    flex-grow: 1; /* Allow button to grow */
+    margin-top: auto; /* Push button to bottom */
 }
 
 .required-item {
-    border: 2px solid #ff4444;
+    border: 2px solid var(--danger);
     position: relative;
 }
 
 .required-badge {
-    background-color: #ff4444;
+    background-color: var(--danger);
     color: white;
-    padding: 2px 6px;
-    border-radius: 3px;
+    padding: 3px 8px;
+    border-radius: var(--border-radius-small);
     font-size: 0.8em;
     margin-left: 8px;
+    font-weight: bold;
 }
 
-/* 自定义警告弹窗样式 (顶部通知样式) */
-.custom-alert {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2000;
-    padding: 10px;
-    pointer-events: none;
-}
-
-.custom-alert-content {
-    background-color: rgba(50, 50, 50, 0.9);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 12px;
+.shop-actions {
     text-align: center;
-    max-width: 400px;
-    margin: 10px auto 0 auto;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
-    pointer-events: auto;
-    animation: slideDown 0.4s ease-out forwards;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    margin-top: 30px;
 }
 
-.alert-close {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #ccc;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s ease;
-    pointer-events: auto;
+/* ===== Game Section ===== */
+#game-section {
+    display: flex; /* Layout status and task side-by-side */
+    gap: 25px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-.alert-close:hover {
-    color: white;
-    transform: translateY(-50%);
-}
-
-#alertMessage {
-    display: block;
-    padding-right: 30px;
-    font-size: 1em;
-    color: #eee;
-    margin: 0;
-}
-
-#alertConfirm {
-    background-color: #5cb85c; /* 更柔和的绿色 */
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9em;
-    margin-top: 5px;
-    transition: background-color 0.2s ease;
-}
-
-#alertConfirm:hover {
-    background-color: #4cae4c;
-}
-
-@keyframes slideDown {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* 自定义确认弹窗样式 */
-.custom-confirm {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.custom-confirm-content {
-    background-color: #fff;
+.game-status {
+    flex: 1; /* Take up available space */
+    min-width: 250px; /* Minimum width before wrapping */
+    background-color: var(--bg-tertiary);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-width: 80%;
-    width: 300px;
-    text-align: center;
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-light);
+    margin-bottom: 25px; /* Add bottom margin for vertical spacing when wrapped */
 }
 
-#confirmMessage {
-    margin-bottom: 20px;
-    font-size: 1.1em;
-    white-space: pre-line;
-    color: #333;
-}
-
-.confirm-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.confirm-button {
-    padding: 8px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-#confirmYes {
-    background-color: #4CAF50;
-    color: white;
-}
-
-#confirmYes:hover {
-    background-color: #45a049;
-}
-
-#confirmNo {
-    background-color: #f44336;
-    color: white;
-}
-
-#confirmNo:hover {
-    background-color: #da190b;
-}
-
-/* 消息显示区域样式 */
-.message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    animation: fadeInOut 3s ease-in-out;
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { opacity: 0; }
-}
-
-.task-description {
-    background-color: #444;
-    padding: 10px;
-    border-radius: 5px;
-    min-height: 40px; /* 确保有最小高度 */
-}
-
-/* 上楼方式显示区域样式 */
-.climbing-info {
-    background-color: #555; /* 深灰色背景 */
-    color: #eee; /* 浅色文字 */
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 15px; /* 与任务信息保持间距 */
-    border: 1px solid #666; /* 边框 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 轻微阴影 */
-}
-
-.climbing-info h4 {
+.status-header h3 {
+    color: var(--accent-primary);
     margin-top: 0;
-    color: #ffc107; /* 标题颜色 */
-    border-bottom: 1px solid #777;
-    padding-bottom: 5px;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
 }
 
-.climbing-info p {
-    margin-bottom: 0;
-    line-height: 1.6; /* 行高 */
-}
-
-/* 游戏控制按钮 */
-.game-controls {
-    margin-top: 20px;
+.status-info {
     display: flex;
-    justify-content: center; /* 居中按钮 */
-    gap: 15px; /* 按钮间距 */
+    justify-content: flex-start; /* 改为靠左对齐 */
+    margin-bottom: 20px;
+    gap: 15px;
 }
 
-.game-button {
-    padding: 10px 20px;
-    font-size: 1em;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    background-color: #007bff; /* 默认蓝色 */
-    transition: background-color 0.3s ease;
+.floor-info,
+.game-score {
+    flex: 0 1 auto; /* 改为自适应宽度 */
+    min-width: fit-content; /* 最小宽度适应内容 */
+    padding: 8px 12px; /* 减小内边距 */
+    text-align: left; /* 确保文字靠左 */
 }
 
-.game-button:hover {
-    background-color: #0056b3;
+/* Adjust text alignment within score-display if needed */
+.status-info .score-display span:first-child {
+    color: var(--accent-secondary);
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-right: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap; /* 防止文字换行 */
 }
 
-.game-button:disabled {
-    background-color: #6c757d; /* 禁用状态灰色 */
-    cursor: not-allowed;
+.status-info .score-display span:last-child {
+    font-weight: bold;
+    color: var(--accent-primary);
+    font-size: 1.2em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap; /* 防止文字换行 */
+}
+
+.clothing-status {
+    margin-top: 20px;
+}
+
+.clothing-status h3 {
+    color: var(--accent-secondary);
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+#clothingItems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.clothing-item {
+    background-color: var(--bg-secondary);
+    padding: 6px 10px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color);
+    color: var(--success);
+    font-weight: bold;
+    font-size: 0.9em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.clothing-item.removed {
+    color: var(--danger);
+    text-decoration: line-through;
     opacity: 0.7;
 }
 
-#completeTask {
-    background-color: #28a745; /* 绿色 */
-}
-#completeTask:hover {
-    background-color: #218838;
-}
-
-#skipTask {
-    background-color: #ffc107; /* 黄色 */
-    color: #333; /* 深色文字 */
-}
-#skipTask:hover {
-    background-color: #e0a800;
-}
-
-#nextFloor {
-    background-color: #17a2b8; /* 青色 */
-}
-#nextFloor:hover {
-    background-color: #117a8b;
-}
-
-/* 特别处理按钮隐藏时的样式，防止影响布局 */
-.game-button[style*="display: none"] {
-    /* 保持占位或完全移除，根据需要调整 */
-    /* visibility: hidden; */ 
-    /* 或者如果希望完全不占空间 */
-     display: none !important; 
-}
-
-/* 任务信息 */
-.task-info {
-    background-color: #444;
-    padding: 10px;
-    border-radius: 5px;
-    min-height: 40px; /* 确保有最小高度 */
-}
-
-/* 库存区域样式 */
 .inventory {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .inventory h3 {
-    margin-bottom: 5px;
+    color: var(--accent-secondary);
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+#inventory {
+    /* Container for dynamic items */
 }
 
 .inventory-item {
-    margin-bottom: 5px;
-    display: flex; /* 让按钮和文本在同一行 */
-    align-items: center; /* 垂直居中 */
-    gap: 10px; /* 文本和按钮之间的间距 */
+    background-color: var(--bg-secondary);
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.inventory-item span {
+    flex-grow: 1;
 }
 
-/* 库存使用按钮样式 */
-#inventory .inventory-item .use-button {
-    /* Apply base button styles implicitly or explicitly if needed */
-    /* Inherits padding, font-size etc. from .button if added to HTML */
-     /* Explicitly set variant colors */
-    background-color: var(--accent-secondary);
-    color: white;
-    min-width: auto; /* Override general button min-width */
-    padding: 4px 10px; /* Smaller padding for inventory button */
-    font-size: 0.85em;
-}
-
-#inventory .inventory-item .use-button:hover:not(:disabled) {
-    background-color: #138496; /* Darker cyan on hover */
-}
-
-#inventory .inventory-item .use-button:disabled {
-     background-color: var(--disabled);
-     color: var(--text-secondary);
-     /* Inherits other disabled styles from .button if class is added */
-}
-
-.back-button.ready-to-start {
-    background-color: #28a745; /* 绿色背景表示可以开始 */
-    color: white;
-}
-
-.back-button.ready-to-start:hover {
-    background-color: #218838; /* 悬停时深绿色 */
-}
-
-/* 历史记录区域样式 */
-#history-section {
+.task-area {
+    flex: 2; /* Task area takes more space */
+    min-width: 350px;
+    background-color: var(--bg-tertiary);
     padding: 20px;
-    background-color: #444;
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-light);
+    display: flex;
+    flex-direction: column;
+}
+
+.task-area h2 {
+    color: var(--accent-primary);
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.task-info, #currentTask { /* Ensure both selectors are styled */
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 15px;
+    border-radius: var(--border-radius-medium);
+    margin-bottom: 20px;
+    min-height: 80px; /* Ensure space for content */
+    border: 1px solid var(--border-color);
+    flex-grow: 1; /* Allow task info to fill space */
+}
+
+.task-name {
+    display: block;
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: var(--accent-secondary);
+}
+
+.task-description-text {
+    display: block;
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* Text Center utility */
+.text-center {
+    text-align: center;
+    display: block; /* Needed for text-align to work properly on span */
+    width: 100%;
+}
+
+.game-controls {
+    margin-top: auto; /* Push controls to bottom */
+    padding-top: 20px; /* Space above buttons */
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Hide climbingInfo div as it's now integrated into task-info */
+#climbingInfo {
+    display: none !important;
+}
+
+/* ===== End Section ===== */
+#end-section {
+    text-align: center;
+}
+
+.final-score h2, .ending-result h3, .game-stats h3 {
+    color: var(--accent-primary);
+}
+
+.final-score p {
+    font-size: 1.6em;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+}
+
+.ending-result, .game-stats {
+    background-color: var(--bg-tertiary);
+    padding: 25px;
+    border-radius: var(--border-radius-medium);
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+    box-shadow: var(--box-shadow-light);
+}
+
+#endingDescription {
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-size: 1.1em;
+}
+
+.game-stats li {
+    color: var(--text-primary);
+    padding-left: 25px;
+}
+.game-stats li::before {
+    color: var(--accent-secondary);
+    left: 5px;
+    top: 3px;
+}
+
+.end-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     margin-top: 20px;
+}
+
+/* ===== History Section ===== */
+#history-section {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
 }
 
 .history-header {
@@ -984,190 +834,573 @@ main > section {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #666;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 #history-section h2 {
-    color: #ffc107;
+    color: var(--accent-primary);
     margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 #historyList {
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
-    padding-right: 10px; /* 为滚动条留出空间 */
+    padding-right: 10px; /* Space for scrollbar */
+    margin: -10px; /* Counteract padding */
+    padding: 10px;
+}
+
+/* Scrollbar styling (optional, webkit) */
+#historyList::-webkit-scrollbar {
+    width: 8px;
+}
+#historyList::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-small);
+}
+#historyList::-webkit-scrollbar-thumb {
+    background-color: var(--text-secondary);
+    border-radius: var(--border-radius-small);
+    border: 2px solid var(--bg-secondary);
 }
 
 .history-item {
-    background-color: #555;
-    border: 1px solid #666;
-    border-radius: 4px;
-    padding: 15px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-medium);
+    padding: 15px 20px;
     margin-bottom: 15px;
+    box-shadow: var(--box-shadow-light);
 }
 
 .history-item p {
-    margin: 5px 0;
-    color: #ddd;
+    margin: 6px 0;
+    color: var(--text-primary);
     line-height: 1.5;
 }
 
 .history-item .timestamp {
-    font-size: 0.9em;
-    color: #aaa;
+    font-size: 0.85em;
+    color: var(--text-secondary);
     margin-bottom: 10px;
 }
 
 .history-item strong {
-    color: #ffc107;
+    color: var(--accent-secondary);
 }
 
-/* 返回按钮通用样式已存在，无需重复 */
+/* ===== Modals & Alerts ===== */
 
-/* Remove Old Button Styles */
-
-/* Keep .button, .button-primary, .button-secondary, .button-success, .button-info, .button-danger base styles */
-
-/* Remove specific old styles like: */
-/* .start-button { ... } */
-/* .rules-button { ... } */
-/* .back-button { ... } (Keep .ready-to-start variant) */
-/* .buy-button { ... } (Remove base button-like styles, keep if used for layout) */
-/* #completeTask { background-color: ...; color: ...; } */
-/* #skipTask { background-color: ...; } */
-/* #rollDice { background-color: ...; display: block; margin: 0 auto; } */
-/* #closeModal { background-color: ...; display: block; margin: 10px auto 0 auto; } */
-/* .game-button { padding: ...; font-size: ...; background-color: ...; } */
-/* .next-floor-button { background-color: ...; color: ...; } */
-/* .restart-button { background-color: ...; color: ...; padding: ...; } */
-/* .history-button { background-color: ...; padding: ...; } */
-/* .confirm-button { padding: ...; font-size: ...; } */
-/* #confirmYes { background-color: ...; } */
-/* #confirmYes:hover { ... } */
-/* #confirmNo { background-color: ...; } */
-/* #confirmNo:hover { ... } */
-/* #alertConfirm { background-color: ...; } */
-/* #alertConfirm:hover { ... } */
-
-/* Keep the .ready-to-start variant for the adventure button */
-.button.ready-to-start { /* Ensure it uses the base .button class now */
-    background-color: var(--success); /* Use success color variable */
-    color: white;
+/* Message (Top temporary info) */
+.message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(58, 63, 74, 0.95); /* Use bg-secondary with alpha */
+    color: var(--text-primary);
+    padding: 12px 25px;
+    border-radius: var(--border-radius-medium);
+    z-index: 2000;
+    box-shadow: var(--box-shadow-medium);
+    border: 1px solid var(--border-color);
+    animation: fadeInOut 3s ease-in-out forwards;
+    backdrop-filter: blur(3px);
 }
 
-.button.ready-to-start:hover:not(:disabled) {
-    background-color: #218838; /* Darker green */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -20px); }
+    10% { opacity: 1; transform: translateX(-50%); }
+    90% { opacity: 1; transform: translateX(-50%); }
+    100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* Keep the inventory use button styles we just added */
-#inventory .inventory-item .use-button {
-    /* Apply base button styles implicitly or explicitly if needed */
-    /* Inherits padding, font-size etc. from .button if added to HTML */
-     /* Explicitly set variant colors */
-    background-color: var(--accent-secondary);
-    color: white;
-    min-width: auto; /* Override general button min-width */
-    padding: 4px 10px; /* Smaller padding for inventory button */
-    font-size: 0.85em;
+/* Custom Alert (Container for dynamic alerts) */
+#alertContainer {
+    position: fixed;
+    top: 20px; /* Adjust starting position from top */
+    right: 20px; /* Align to the right */
+    width: 350px; /* Set a max-width or width */
+    z-index: 1999;
+    display: flex;
+    flex-direction: column; /* Stack alerts vertically */
+    align-items: flex-end; /* Align items to the right */
+    gap: 10px; /* Spacing between alerts */
+    pointer-events: none; /* Allow clicks through container */
 }
 
-#inventory .inventory-item .use-button:hover:not(:disabled) {
-    background-color: #138496; /* Darker cyan on hover */
+/* Dynamic Alert Box Style */
+.dynamic-alert {
+    background-color: rgba(58, 63, 74, 0.95); /* Same as #message */
+    color: var(--text-primary);
+    padding: 15px 40px 15px 20px; /* Adjust padding for close button */
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--box-shadow-medium);
+    pointer-events: auto; /* Enable clicks on the alert itself */
+    animation: slideInRight 0.4s ease-out forwards;
+    position: relative; /* Needed for absolute positioning of close button */
+    width: 100%; /* Take full width of the container */
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(3px);
+    display: flex; /* Use flex to align text and potentially button */
+    align-items: center; /* Vertically center content */
 }
 
-#inventory .inventory-item .use-button:disabled {
-     background-color: var(--disabled);
-     color: var(--text-secondary);
-     /* Inherits other disabled styles from .button if class is added */
+/* Animation for alerts sliding in from the right */
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-/* 特殊按钮样式 - 只影响开始游戏按钮 */
-#startGame {
-    background-color: #ffc107; /* 金色背景 */
-    color: #333; /* 深色文字 */
-    font-size: 1.2em; /* 稍大的字体 */
-    padding: 12px 30px; /* 更宽的内边距 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* 更明显的阴影 */
+.dynamic-alert-message {
+    flex-grow: 1; /* Message takes available space */
+    text-align: left;
+    font-size: 1em;
+    margin: 0;
 }
 
-#startGame:hover {
-    background-color: #ffca2c; /* 稍亮的金色 */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* 悬停时更大的阴影 */
+.dynamic-alert-close {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1.8em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    box-shadow: none !important;
+    text-decoration: none;
+    text-shadow: none;
+    transition: none;
 }
 
-#startGame:active {
-    background-color: #e0a800; /* 点击时稍深的金色 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 点击时减小阴影 */
+.dynamic-alert-close:hover {
+    color: var(--danger);
 }
 
-/* 商店通知样式 */
-.shop-notice {
-    color: #ff0000;
-    font-size: 0.9em;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    font-weight: normal;
-    line-height: 1.4;
-    max-width: 100%;
-    word-wrap: break-word;
-}
+/* ===== Custom Confirm Dialog ===== */
 
-.text-center {
-    text-align: center;
-    display: block;
+/* General Modal (Task Detail - if used) */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    background-color: rgba(40, 44, 52, 0.7);
+    z-index: 1998; /* Below alerts */
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
 }
 
-/* 起始楼层设置样式 */
-.starting-floor-setting {
-    margin-bottom: 15px;
+.modal-content {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--border-radius-large);
+    max-width: 600px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-content h2 {
+    color: var(--accent-primary);
+    margin-bottom: 20px;
+    font-size: 1.6em;
+}
+
+.modal-content p {
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    font-size: 1.1em;
+}
+
+#closeModal {
+    display: block;
+    margin: 10px auto 0 auto;
+    width: 120px;
+}
+
+/* Responsive adjustments (optional example) */
+@media (max-width: 768px) {
+    #game-section {
+        flex-direction: column; /* Stack status and task area */
+    }
+    .shop-items {
+        /* grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Smaller min width */
+        gap: 15px;
+    }
+    .container {
+        /* padding: 15px; */
+        padding: 15px; /* Increase overall container padding slightly */
+        margin: 10px auto;
+    }
+    header {
+        flex-direction: column;
+        align-items: center; /* Center align items in mobile header */
+        gap: 5px; /* Reduce gap between title and subtitle */
+        /* padding: 15px 0; */
+        padding: 15px 0 5px 0; /* Reduce bottom padding */
+        /* margin-bottom: 20px; */
+        margin-bottom: 10px; /* Reduce bottom margin */
+        border-bottom: none;
+    }
+    .header-content {
+        /* Reset desktop margin for mobile centering */
+        margin-top: 0;
+        margin-left: 0;
+        text-align: center; /* Ensure text inside is centered */
+    }
+    .header-content h1 {
+        /* font-size: 1.6em; */
+        font-size: 2.1em; /* Increase size by ~30% */
+    }
+    /* Add rule for subtitle font size increase */
+    .header-content .subtitle {
+        font-size: 1.2em; /* Increase size, adjust as needed */
+    }
+    button {
+        /* padding: 8px 16px; */
+        padding: 8px 14px; /* Slightly adjust padding */
+        font-size: 0.95em;
+    }
+    .start-actions > button {
+        width: 80%;
+    }
+
+    /* Additional Mobile Optimizations */
+    main > section,
+    .game-intro,
+    .game-status,
+    .task-area,
+    .shop-item,
+    .ending-result,
+    .game-stats,
+    .history-item {
+        padding: 15px; /* Reduce padding */
+    }
+
+    h2 {
+        font-size: 1.5em;
+        padding-bottom: 8px;
+    }
+    h3 {
+        font-size: 1.2em;
+        margin-top: 15px;
+        margin-bottom: 8px;
+    }
+    .shop-item h3 {
+        font-size: 1.1em;
+    }
+    #rules-section h2 { font-size: 1.6em; }
+    #rules-section h3 { font-size: 1.3em; }
+
+    .custom-confirm-content {
+        width: 90%;
+        max-width: 380px; /* Keep a max width but allow shrinking */
+        padding: 20px;
+    }
+    #confirmMessage {
+        font-size: 1.05em;
+    }
+    .confirm-button {
+        padding: 8px 18px;
+    }
+
+    #alertContainer {
+        width: calc(100% - 30px); /* Adjust width based on right offset */
+        max-width: 350px;
+        right: 10px;
+        top: 10px;
+        gap: 8px;
+    }
+    .dynamic-alert {
+        padding: 10px 35px 10px 15px;
+    }
+    .dynamic-alert-message {
+        font-size: 0.95em;
+    }
+
+    .task-area {
+        min-width: 0; /* Remove min-width restriction */
+    }
+
+    .status-info {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .floor-info,
+    .game-score {
+        flex-basis: calc(50% - 5px);
+        min-width: 120px;
+    }
+
+    .shop-header {
+        padding: 10px 15px;
+    }
+    .shop-score-standalone {
+        margin-bottom: 15px;
+    }
+    .price {
+        font-size: 1.1em;
+    }
+
+    .progress-labels {
+        /* padding: 0 10px; */ /* Remove padding */
+        /* Width and margin will be inherited or can be adjusted if needed */
+    }
+
+    .progress-marker {
+        /* font-size: 0.75em; */
+        font-size: 0.85em; /* Adjust mobile font size */
+    }
+
+}
+
+/* Optional: Add rules for very small screens if necessary */
+@media (max-width: 480px) {
+    .container {
+        margin: 10px 5px;
+        padding: 5px;
+    }
+    .header-content h1 { font-size: 1.4em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+    button { font-size: 0.9em; padding: 6px 12px; }
+    .shop-items {
+        grid-template-columns: 1fr; /* Single column */
+    }
+    .status-info {
+         flex-direction: column;
+         align-items: stretch;
+    }
+    .floor-info,
+    .game-score {
+        flex-basis: auto;
+        min-width: 0;
+    }
+    #alertContainer {
+        width: calc(100% - 20px);
+    }
+    .custom-confirm-content {
+        padding: 15px;
+    }
+    #confirmMessage {
+        font-size: 1em;
+    }
+    .confirm-button {
+        padding: 7px 15px;
+    }
+
+    .progress-labels {
+        /* padding: 0 8px; */ /* Remove padding */
+        /* Width and margin will be inherited or can be adjusted if needed */
+    }
+
+    .progress-marker {
+        /* font-size: 0.7em; */
+        font-size: 0.8em; /* Adjust small mobile font size */
+    }
+
+}
+
+.dynamic-alert-close:hover {
+    color: var(--danger);
+}
+
+/* ===== Custom Confirm Dialog (Restoring missing styles AGAIN) ===== */
+.custom-confirm {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(40, 44, 52, 0.7); /* Darker overlay */
+    display: flex; /* Use flex for centering */
+    justify-content: center;
+    align-items: center;
+    z-index: 2001; /* Above message and alert */
+    backdrop-filter: blur(4px);
+}
+
+.custom-confirm-content {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    max-width: 90%; /* Allow shrinking */
+    width: 380px; /* Default width */
     text-align: center;
-    background-color: #444;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #555;
+    border: 1px solid var(--border-color);
 }
 
-.starting-floor-setting label {
-    color: #ffc107;
-    font-weight: bold;
-    margin-right: 8px;
+#confirmMessage {
+    margin-bottom: 25px;
+    font-size: 1.15em;
+    white-space: pre-line; /* Preserve line breaks */
+    color: var(--text-primary);
+    line-height: 1.5;
 }
 
-.starting-floor-setting input {
-    width: 60px;
-    padding: 5px;
-    border: 1px solid #666;
-    border-radius: 4px;
-    background-color: #333;
-    color: white;
-    text-align: center;
+.confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.confirm-button {
+    /* Base styles applied by general button rule */
+    padding: 10px 25px;
     font-size: 1em;
 }
 
-.setting-note {
-    display: block;
-    color: #aaa;
-    font-size: 0.8em;
-    margin-top: 5px;
+#confirmYes {
+    background-color: var(--success);
+}
+#confirmYes:hover:not(:disabled) {
+    background-color: #b1d89b; /* Lighter green */
 }
 
-/* 新增：固定查看规则按钮到右下角 */
-#viewRules {
+#confirmNo {
+    background-color: var(--danger);
+}
+#confirmNo:hover:not(:disabled) {
+    background-color: #e8838c; /* Lighter red */
+}
+
+/* ===== General Modal (Task Detail - if used) ===== */
+.modal {
+    display: none;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000; /* 确保在顶层 */
-    border-radius: 8px;
-    padding: 8px 15px; /* 减小内边距 */
-    font-size: 0.9em; /* 减小字体大小 */
-    background-color: #17a2b8; /* 确保有背景色 */
-    color: white; /* 确保有文字颜色 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(40, 44, 52, 0.7);
+    z-index: 1998; /* Below alerts */
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
 }
 
-/* 新增：用于标红警告文本 */
-.warning-text {
-    color: red;
-    font-weight: bold; /* 可以加粗强调 */
+.modal-content {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--border-radius-large);
+    max-width: 600px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
 }
+
+.modal-content h2 {
+    color: var(--accent-primary);
+    margin-bottom: 20px;
+    font-size: 1.6em;
+}
+
+.modal-content p {
+    color: var(--text-primary);
+    margin-bottom: 25px;
+    font-size: 1.1em;
+}
+
+#closeModal {
+    display: block;
+    margin: 10px auto 0 auto;
+    width: 120px;
+}
+
+/* ===== Progress Section ===== */
+.progress-section {
+    background-color: var(--bg-tertiary);
+    /* padding: 15px 20px; */ /* Remove horizontal padding */
+    padding: 15px 0; /* Only vertical padding */
+    border-radius: var(--border-radius-medium);
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-light);
+}
+
+.progress-section h3 {
+    color: var(--accent-primary);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+.progress-bar-container {
+    /* width: 100%; */
+    width: 96%; /* Make slightly narrower */
+    margin: 0 auto 10px auto; /* Center horizontally, keep bottom margin */
+    background-color: var(--bg-primary);
+    border-radius: var(--border-radius-small);
+    height: 14px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border-color);
+    /* margin-bottom: 10px; */ /* Moved to margin shorthand */
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4CAF50 0%, #FFEB3B 50%, #F44336 100%);
+    border-radius: var(--border-radius-small);
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.progress-labels {
+    position: relative;
+    /* width: 100%; */
+    width: 96%; /* Match progress bar width */
+    height: 20px;
+    /* margin-top: 5px; */
+    margin: 5px auto 0 auto; /* Center horizontally */
+    /* padding: 0 15px; */ /* Remove padding, use centering */
+}
+
+.progress-marker {
+    position: absolute;
+    bottom: -2px;
+    transform: translateX(-50%); /* Center by default */
+    /* font-size: 0.8em; */
+    font-size: 0.9em; /* Increase size */
+    /* color: var(--text-secondary); */
+    color: var(--text-primary); /* Brighter color */
+    font-weight: bold; /* Make text bold */
+    cursor: default;
+    /* opacity: 0.8; */
+    opacity: 1; /* Fully opaque */
+    transition: opacity 0.2s ease;
+}
+
+/* Restore special positioning for first and last child */
+.progress-labels .progress-marker:first-child {
+    left: 0; /* Align left edge to padding boundary */
+    transform: translateX(0); /* Remove centering */
+}
+/* .progress-labels .progress-marker:last-child {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+} */
+
+/* --- Mobile adjustments for progress bar --- */
