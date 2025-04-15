@@ -326,19 +326,24 @@ function initGame() {
     let startingFloor = 1;
     if (startingFloorInput && startingFloorInput.value) {
         startingFloor = parseInt(startingFloorInput.value) || 1;
-        if (startingFloor < 1) startingFloor = 1;
+        if (startingFloor < 1) {
+             showAlert('起始楼层不能小于1，已重置为1。');
+             startingFloor = 1;
+             if(startingFloorInput) startingFloorInput.value = '1'; // 同步输入框
+        }
+        // 移除对特定楼层(1,4,7)的限制
     }
     gameState = {
         score: Math.floor(Math.random() * 23) + 5,
-        currentFloor: startingFloor,
-        maxFloor: startingFloor,
-        startingFloor: startingFloor,
+        currentFloor: 1, // 内部楼层始终从 1 开始
+        maxFloor: 1,     // 内部最大楼层也从 1 开始
+        startingFloor: startingFloor, // 存储用户选择的显示起始楼层
         gamePhase: 'initial',
         clothing: { '上衣': false, '长裤': false, '内裤': false, '白袜': false, '护膝': false },
         currentTask: null,
         tasksCompleted: 0,
         tasksCompletedInPhase: { A: 0, B: 0, C: 0 },
-        currentPhase: getPhaseForFloor(startingFloor),
+        currentPhase: 'A', // 内部阶段始终从 A 开始
         inventory: { 'skip': 0, 'restore': 0 },
         assignedClimbingTask: null,
         eighthFloorFirstTaskCompleted: false,
@@ -346,9 +351,7 @@ function initGame() {
         progressStepsCompleted: 0 // 初始化
     };
     saveGameState();
-    console.log(`[Init Game] Game initialized, starting from floor ${startingFloor}, internal phase ${gameState.currentPhase}.`);
-    if (startingFloor === 8 && gameState.tasksCompletedInPhase['C'] === 0) gameState.eighthFloorFirstTaskCompleted = false;
-    else if (startingFloor > 8) console.warn("[Init Game] Starting from a floor > 8 might skip intended game flow.");
+    console.log(`[Init Game] Game initialized, starting from display floor ${startingFloor}, internal floor ${gameState.currentFloor}, internal phase ${gameState.currentPhase}.`);
     generateNewTask();
     updateGameStatus();
 }
@@ -633,26 +636,21 @@ function updateGameStatus() {
     if (gameState.assignedClimbingTask) {
         // 状态1: 已分配上楼任务，等待确认
         confirmClimbingButton.style.display = 'block';
-        taskElement.innerHTML = `<span class="task-name text-center">上楼方式：${gameState.assignedClimbingTask.name}</span><span class="task-description-text text-center">${gameState.assignedClimbingTask.description}</span>`;
         console.log("[Update Status] Climbing task pending confirmation.");
     } else if (gameState.currentTask) {
         // 状态2: 有普通任务
         completeTaskButton.style.display = 'block';
-        // 更新任务显示 (这部分应该在 generateNewTask 做，但这里确保显示正确)
-        taskElement.innerHTML = `<span class="task-name">${gameState.currentTask.name}</span><span class="task-description-text">${gameState.currentTask.description}</span>`;
         console.log("[Update Status] Task found, showing Complete Task button.");
     } else if ([2, 5, 8].includes(gameState.currentFloor)) {
         // 状态3: 在爬楼决策层，无任务，未分配上楼方式 -> 显示"获取上楼方式"按钮
         nextFloorButton.style.display = 'block';
         nextFloorButton.textContent = '获取上楼方式';
-        taskElement.innerHTML = '<span class="task-name text-center">任务完成！请点击按钮获取上楼方式</span>';
         console.log(`[Update Status] On floor ${gameState.currentFloor}, show '获取上楼方式' button.`);
     } else if ([1, 4, 7].includes(gameState.currentFloor)) {
         // 状态4: 在普通任务层，无任务 -> 显示"前往下一层"按钮
         nextFloorButton.style.display = 'block';
         nextFloorButton.textContent = '前往下一层';
-        taskElement.innerHTML = '<span class="task-name text-center">任务完成！请点击按钮前往下一层</span>';
-        console.log(`[Update Status] On floor ${gameState.currentFloor}, show '前往下一层' button.`);
+        console.log(`[Update Status] On floor ${gameState.currentFloor}, show '前往下一层' button. Button display: ${nextFloorButton.style.display}`);
     } else {
         // 其他情况 (如游戏刚开始在商店，或结束) - 不显示按钮
         console.log("[Update Status] Other state, hiding control buttons.");
@@ -1187,17 +1185,6 @@ function updateProgressBar() {
     console.log(`[Progress Bar] Updated: Steps=${gameState.progressStepsCompleted}/${TOTAL_PROGRESS_STEPS}, Percent=${progressPercent.toFixed(1)}%`);
 }
 
-function getPhaseForFloor(floor) {
-    if (floor >= 1 && floor <= 2) return 'A';
-    if (floor >= 3 && floor <= 4) return 'Climbing1';
-    if (floor >= 5 && floor <= 6) return 'B';
-    if (floor == 7) return 'Climbing2';
-    if (floor == 8) return 'C';
-    if (floor >= 9 && floor <= 10) return 'Climbing3';
-    if (floor > 10) return 'End';
-    return 'A';
-}
-
 // 新增：结束游戏函数
 function endGame(reason = "游戏结束！") { // 添加默认原因
     console.log(`[End Game] Triggered. Reason: ${reason}`);
@@ -1283,35 +1270,50 @@ function assignClimbingTask() {
     gameState.assignedClimbingTask = { ...selectedTask, targetFloor: targetFloor };
     console.log(`[Assign Climbing Task] Assigned: ${selectedTask.name} (Target: ${targetFloor})`);
 
+    // **** 新增：更新任务区域显示上楼任务 ****
+    const taskElement = document.getElementById('currentTask');
+    if (taskElement) {
+        taskElement.innerHTML = `
+            <span class="task-name text-center">上楼方式：${gameState.assignedClimbingTask.name}</span>
+            <p class="task-description-text text-center">${gameState.assignedClimbingTask.description}</p>
+        `;
+        console.log('[Assign Climbing Task] Updated task area with climbing info.');
+    } else {
+        console.error('[Assign Climbing Task] ERROR: Cannot find #currentTask element!');
+    }
+    // **** 结束新增 ****
+
     // 更新UI以显示待确认的任务
     updateGameStatus();
     saveGameState(); // 保存分配的任务
 }
 
-// 修改 nextFloor 函数，只处理非爬楼层
-async function nextFloor() {
-    // 移除爬楼任务确认逻辑，仅处理普通楼层递增
+// 仅处理从普通任务楼层（1, 4, 7）前进到下一楼层（2, 5, 8）
+function nextFloor() {
     const currentFloor = gameState.currentFloor;
-    console.log(`[Next Floor] Called on floor ${currentFloor}.`);
+    console.log(`[Next Floor Function] Called. Internal floor: ${currentFloor}.`);
 
-    // 只允许在非爬楼决策楼层 (1, 4, 7) 点击此按钮前进
-    if ([1, 4, 7].includes(currentFloor)) {
-        let nextFloor = currentFloor + 1;
-        console.log(`[Next Floor] Moving from ${currentFloor} to ${nextFloor}.`);
-        gameState.currentFloor = nextFloor;
-        gameState.currentPhase = getPhaseForFloor(gameState.currentFloor);
-        if (gameState.currentFloor > gameState.maxFloor) {
-            gameState.maxFloor = gameState.currentFloor;
-        }
-        updateFloor();
-        generateNewTask();
-        updateGameStatus();
-        saveGameState();
-    } else {
-        console.warn(`[Next Floor] Button should not be active on floor ${currentFloor}.`);
-        showAlert("请先完成任务或选择上楼方式。");
+    let nextFloor = currentFloor;
+    if (currentFloor === 1) nextFloor = 2;
+    else if (currentFloor === 4) nextFloor = 5;
+    else if (currentFloor === 7) nextFloor = 8;
+    else {
+        console.error(`[Next Floor Function] Error: Called on unexpected internal floor ${currentFloor}.`);
+        showAlert("内部逻辑错误：尝试在非预期楼层前进。");
+        return;
     }
-    // 移除结束游戏检查，这个应该在 confirmClimbing 或其他地方处理
+
+    console.log(`[Next Floor Function] Moving from internal floor ${currentFloor} to ${nextFloor}.`);
+    gameState.currentFloor = nextFloor;
+    updateFloor(); // 更新显示的楼层
+    updateProgressBar(); // 更新进度条
+    
+    // 到达 2, 5, 8 楼后，应该生成该楼层的任务
+    console.log(`[Next Floor Function] Arrived at internal floor ${nextFloor}, generating task for this floor.`);
+    generateNewTask(); // <--- 修改点：调用 generateNewTask 获取新任务
+    
+    saveGameState();
+    updateGameStatus(); // 更新按钮状态等 (应该会显示 completeTask 按钮)
 }
 
 // 初始化整个应用程序
@@ -1323,7 +1325,7 @@ function initializeApp() {
     if (loaded) {
         console.log('Game state loaded from localStorage.');
 
-        // 新增：优先处理游戏结束状态
+        // 优先处理游戏结束状态
         if (gameState.gamePhase === 'ended') {
             console.log('Loaded state indicates game ended. Showing end section.');
             // 更新结束界面信息
@@ -1333,69 +1335,43 @@ function initializeApp() {
             document.getElementById('remainingClothesEnd').textContent = Object.values(gameState.clothing).filter(Boolean).length;
             document.getElementById('endingDescription').textContent = getEnding();
             showSection('end-section');
-            // 确保结束界面的按钮事件也被绑定 (因为后续逻辑被return)
-            setupEndAndHistoryButtons(); 
-            return; // 结束初始化，不再执行后续界面判断
+            setupEndAndHistoryButtons();
+            return; // 结束初始化
         }
 
-        // 状态已加载，需要根据当前状态恢复UI
-        updateScore();
-        updateFloor();
-        updateClothingStatus();
-        updateInventory();
-        updateShopButtons();
-        updateGameStatus();
-
-        // 根据游戏阶段和楼层决定显示哪个界面
+        // 处理游戏进行中状态
         if (gameState.gamePhase === 'adventure') {
             console.log(`Loaded state indicates game in adventure phase (Floor ${gameState.currentFloor}). Showing game section.`);
+            // 恢复UI状态 (代码保持不变)
+            updateScore();
+            updateFloor();
+            updateClothingStatus();
+            updateInventory();
+            updateGameStatus(); // 这会处理任务/上楼方式的显示
             showSection('game-section');
-            
-            // 任务显示逻辑
-            const taskElement = document.getElementById('currentTask');
-            if (gameState.currentTask) {
-                if (taskElement) {
-                    taskElement.innerHTML = `
-                        <span class="task-name">${gameState.currentTask.name}</span>
-                        <p class="task-description-text">${gameState.currentTask.description}</p>
-                    `;
-                }
-            } else {
-                if ([2, 5, 8].includes(gameState.currentFloor)) {
-                    console.log(`[Initialize App] On floor ${gameState.currentFloor} with no task, showing climbing selection.`);
-                    showClimbingTaskSelection();
-                } else if (taskElement) {
-                    taskElement.innerHTML = '<span class="task-name text-center">任务完成！请点击按钮前往下一层</span>';
-                }
-            }
-        }
-        else if (gameState.gamePhase === 'shop') {
-            // 在商店阶段
-            console.log('Loaded state indicates player in shop phase. Showing shop section.');
-            showSection('shop-section');
-            document.getElementById('shopScore').textContent = gameState.score;
-        }
-        else {
-            // 初始状态或未识别状态
-            console.log('Loaded state indicates initial phase or unrecognized state. Showing start section.');
+        } else {
+            // 其他所有状态 (shop, initial, 或未知) 或加载失败，都显示开始界面
+            console.log(`Loaded state phase is '${gameState.gamePhase}' or invalid. Showing start section.`);
             showSection('start-section');
         }
     } else {
-        console.log('No saved game state found. Initializing new game.');
-        initGame();
+        // 没有找到保存的状态 -> 直接显示开始界面，不调用 initGame
+        console.log('No saved game state found. Showing start section.');
         showSection('start-section');
     }
 
-    // --- 按钮事件监听 (保持不变) ---
-     document.getElementById('startGame').addEventListener('click', () => {
+    // --- 事件监听器设置 --- (这部分代码应该在 if/else 之外，总是需要设置)
+    // 'startGame' 按钮监听器 (代码保持不变)
+    document.getElementById('startGame').addEventListener('click', () => {
         console.log('点击开始游戏');
-        initGame(); 
-        gameState.gamePhase = 'shop'; // 标记为商店阶段
-        saveGameState(); 
-        updateShopButtons(); 
+        initGame(); // 在这里初始化游戏并随机分数
+        gameState.gamePhase = 'shop';
+        saveGameState();
+        updateShopButtons();
         updateScore();
         showSection('shop-section');
     });
+    // 其他按钮监听器 (viewRules, backToStart, startAdventure, completeTask, nextFloor, confirmClimbing, 商店购买按钮) (代码保持不变)
     document.getElementById('viewRules').addEventListener('click', () => {
         showSection('rules-section');
     });
@@ -1405,20 +1381,43 @@ function initializeApp() {
     document.getElementById('startAdventure').addEventListener('click', startAdventure);
     document.getElementById('completeTask').addEventListener('click', completeTask);
     document.getElementById('nextFloor').addEventListener('click', () => {
-        // 根据按钮当前的文本决定行为
         const buttonText = document.getElementById('nextFloor').textContent;
         if (buttonText === '获取上楼方式') {
-            console.log("[Next Floor Button] Clicked '获取上楼方式'");
             assignClimbingTask();
         } else if (buttonText === '前往下一层') {
-            console.log("[Next Floor Button] Clicked '前往下一层'");
-            nextFloor(); // 调用只处理普通楼层递增的 nextFloor
+            nextFloor();
         } else {
             console.warn("[Next Floor Button] Unknown button text:", buttonText);
         }
     });
+    document.getElementById('confirmClimbing').addEventListener('click', () => {
+        // ... (confirmClimbing 逻辑保持不变)
+        const previousFloor = gameState.currentFloor;
+        if (![2, 5, 8].includes(previousFloor)) {
+            console.error("[Confirm Climbing] ERROR: Clicked on incorrect floor.");
+            return;
+        }
+        gameState.progressStepsCompleted++;
+        updateProgressBar();
+        let nextFloorValue = 0;
+        if (previousFloor === 2) nextFloorValue = 4;
+        else if (previousFloor === 5) nextFloorValue = 7;
+        else if (previousFloor === 8) nextFloorValue = 10;
+        gameState.currentFloor = nextFloorValue;
+        gameState.assignedClimbingTask = null;
+        if (gameState.currentFloor > gameState.maxFloor) {
+            gameState.maxFloor = gameState.currentFloor;
+        }
+        updateFloor();
+        if (gameState.currentFloor >= TOTAL_FLOORS_FOR_PROGRESS) {
+            endGame(`到达顶层 ${getDisplayFloor(TOTAL_FLOORS_FOR_PROGRESS)}！游戏结束！`);
+        } else {
+            generateNewTask();
+            updateGameStatus();
+            saveGameState();
+        }
+    });
 
-    // --- 新增：为商店购买按钮添加事件监听 ---
     const buyButtons = document.querySelectorAll('#shop-section .buy-button');
     buyButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -1427,10 +1426,11 @@ function initializeApp() {
             buyItem(item, price);
         });
     });
-    // --- 结束新增 ---
 
-    // 调用新的函数来设置结束和历史按钮
+    // 设置结束和历史按钮 (代码保持不变)
     setupEndAndHistoryButtons();
+
+    console.log("initializeApp complete.");
 }
 
 // 初始化整个应用程序
