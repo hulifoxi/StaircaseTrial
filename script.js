@@ -1,3 +1,100 @@
+// ===== Debug Mode Variables & Setup =====
+let titleClickCount = 0;
+let debugModeActive = false;
+const DEBUG_CLICKS_NEEDED = 10;
+let logBuffer = []; // <--- 新增：日志缓冲区
+
+// Store original console functions
+const originalConsole = {
+    log: console.log.bind(console),
+    warn: console.warn.bind(console),
+    error: console.error.bind(console),
+    info: console.info.bind(console), // Optional: capture info too
+    debug: console.debug.bind(console) // Optional: capture debug too
+};
+
+// Function to append messages to the debug log
+function appendToDebugLog(args, type = 'log') {
+    if (!debugModeActive) return; // Only log if active
+
+    const outputDiv = document.getElementById('debug-log-output');
+    const terminalDiv = document.getElementById('debug-terminal');
+    if (!outputDiv || !terminalDiv) return;
+
+    const logEntry = document.createElement('p');
+
+    // Try to stringify objects and format arguments
+    const messageParts = [];
+     // Add timestamp for live logs as well
+    const now = new Date();
+    messageParts.push(`[${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3,'0')}]`);
+    for (const arg of args) {
+        if (typeof arg === 'object' && arg !== null) {
+            try {
+                messageParts.push(JSON.stringify(arg, null, 2)); // Pretty print objects
+            } catch (e) {
+                messageParts.push('[Unserializable Object]');
+            }
+        } else {
+            messageParts.push(String(arg));
+        }
+    }
+    logEntry.textContent = messageParts.join(' '); // Join arguments with space
+
+    // Add class for styling based on type
+    if (type === 'warn') logEntry.classList.add('log-warn');
+    if (type === 'error') logEntry.classList.add('log-error');
+
+    outputDiv.appendChild(logEntry);
+
+    // Auto-scroll to bottom
+    outputDiv.scrollTop = outputDiv.scrollHeight;
+}
+
+// Override console methods (修改逻辑)
+console.log = function(...args) {
+    originalConsole.log(...args); // Always log to original console
+    if (debugModeActive) {
+        appendToDebugLog(args, 'log');
+    } else {
+        logBuffer.push({ type: 'log', args: args, timestamp: new Date() }); // Store with type and timestamp
+    }
+};
+console.warn = function(...args) {
+    originalConsole.warn(...args);
+    if (debugModeActive) {
+        appendToDebugLog(args, 'warn');
+    } else {
+        logBuffer.push({ type: 'warn', args: args, timestamp: new Date() });
+    }
+};
+console.error = function(...args) {
+    originalConsole.error(...args);
+    if (debugModeActive) {
+        appendToDebugLog(args, 'error');
+    } else {
+        logBuffer.push({ type: 'error', args: args, timestamp: new Date() });
+    }
+};
+// Optional overrides for info and debug
+console.info = function(...args) {
+    originalConsole.info(...args);
+    if (debugModeActive) {
+        appendToDebugLog(args, 'info');
+    } else {
+        logBuffer.push({ type: 'info', args: args, timestamp: new Date() });
+    }
+};
+console.debug = function(...args) {
+    originalConsole.debug(...args);
+    if (debugModeActive) {
+        appendToDebugLog(args, 'debug');
+    } else {
+        logBuffer.push({ type: 'debug', args: args, timestamp: new Date() });
+    }
+};
+// ===== End Debug Mode Setup =====
+
 // 游戏状态
 let gameState = {
     score: 0,
@@ -615,6 +712,12 @@ function updateInventory() {
 
 // 更新游戏状态
 function updateGameStatus() {
+    console.log('[Update Status - Start] State:', JSON.stringify({ 
+        currentFloor: gameState.currentFloor, 
+        currentTask: gameState.currentTask, 
+        gamePhase: gameState.gamePhase,
+        assignedClimbingTask: gameState.assignedClimbingTask 
+    }));
     updateScore();
     updateFloor();
     updateClothingStatus();
@@ -625,35 +728,45 @@ function updateGameStatus() {
     const nextFloorButton = document.getElementById('nextFloor');
     const completeTaskButton = document.getElementById('completeTask');
     const confirmClimbingButton = document.getElementById('confirmClimbing');
+    const forfeitGameButton = document.getElementById('forfeitGame'); // 获取放弃按钮
     const taskElement = document.getElementById('currentTask');
 
-    // 重置所有按钮状态
+    // 重置游戏控制按钮状态 (不包括 forfeitGameButton)
     nextFloorButton.style.display = 'none';
     completeTaskButton.style.display = 'none';
     confirmClimbingButton.style.display = 'none';
     nextFloorButton.textContent = '前往下一层'; // 重置文本
 
-    if (gameState.assignedClimbingTask) {
-        // 状态1: 已分配上楼任务，等待确认
-        confirmClimbingButton.style.display = 'block';
-        console.log("[Update Status] Climbing task pending confirmation.");
-    } else if (gameState.currentTask) {
-        // 状态2: 有普通任务
-        completeTaskButton.style.display = 'block';
-        console.log("[Update Status] Task found, showing Complete Task button.");
-    } else if ([2, 5, 8].includes(gameState.currentFloor)) {
-        // 状态3: 在爬楼决策层，无任务，未分配上楼方式 -> 显示"获取上楼方式"按钮
-        nextFloorButton.style.display = 'block';
-        nextFloorButton.textContent = '获取上楼方式';
-        console.log(`[Update Status] On floor ${gameState.currentFloor}, show '获取上楼方式' button.`);
-    } else if ([1, 4, 7].includes(gameState.currentFloor)) {
-        // 状态4: 在普通任务层，无任务 -> 显示"前往下一层"按钮
-        nextFloorButton.style.display = 'block';
-        nextFloorButton.textContent = '前往下一层';
-        console.log(`[Update Status] On floor ${gameState.currentFloor}, show '前往下一层' button. Button display: ${nextFloorButton.style.display}`);
+    // 根据游戏阶段控制 forfeitGameButton 的显示
+    if (gameState.gamePhase === 'adventure') {
+        forfeitGameButton.style.display = 'inline-block'; // 在冒险阶段显示放弃按钮
+
+        // 控制其他游戏按钮的逻辑...
+        if (gameState.assignedClimbingTask) {
+            // 状态1: 已分配上楼任务，等待确认
+            confirmClimbingButton.style.display = 'inline-block';
+            console.log("[Update Status] Climbing task pending confirmation.");
+        } else if (gameState.currentTask) {
+            // 状态2: 有普通任务
+            completeTaskButton.style.display = 'inline-block';
+            console.log("[Update Status] Task found, showing Complete Task button.");
+        } else {
+            console.log(`[Update Status - Check Floor] Floor: ${gameState.currentFloor}, Task: ${gameState.currentTask}, Climbing Task: ${gameState.assignedClimbingTask}`);
+            if ([2, 5, 8].includes(gameState.currentFloor)) { // 3. On climbing decision floor?
+                nextFloorButton.style.display = 'inline-block';
+                nextFloorButton.textContent = '获取上楼方式';
+                // console.log(`[Update Status] On floor ${gameState.currentFloor}, show '获取上楼方式' button.`);
+            } else if ([1, 4, 7].includes(gameState.currentFloor)) { // 4. On task completion floor (task is null)?
+                console.log('[Update Status - Branch 1/4/7] Condition met. Setting button visible.'); // <--- Add this log
+                nextFloorButton.style.display = 'inline-block';
+                nextFloorButton.textContent = '前往下一层'; // This text is already default, but explicit is fine.
+                // console.log(`[Update Status] On floor ${gameState.currentFloor}, show '前往下一层' button. Button display: ${nextFloorButton.style.display}`);
+            }
+        }
     } else {
-        // 其他情况 (如游戏刚开始在商店，或结束) - 不显示按钮
-        console.log("[Update Status] Other state, hiding control buttons.");
+        // 其他情况 (商店, 结束, 开始) - 隐藏放弃按钮
+        forfeitGameButton.style.display = 'none';
+        console.log("[Update Status] Not in adventure phase, hiding control buttons and forfeit button.");
     }
 }
 
@@ -787,6 +900,13 @@ async function completeTask() {
         }
     }
     updateGameStatus(); // 更新游戏状态，包括按钮的显示
+    // Log state before saving
+    console.log('[Complete Task - Pre Save] State:', JSON.stringify({ 
+        currentFloor: gameState.currentFloor, 
+        currentTask: gameState.currentTask, 
+        gamePhase: gameState.gamePhase,
+        assignedClimbingTask: gameState.assignedClimbingTask 
+    }));
     saveGameState();
 }
 
@@ -817,17 +937,35 @@ function getEnding() {
     return endings.worst.description;
 }
 
-// 显示特定游戏阶段的函数
+// 显示特定游戏阶段的函数 (Refactored to use CSS classes)
 function showSection(sectionId) {
+    console.log(`[Show Section] Attempting to show: ${sectionId}`);
+    let sectionFoundAndActivated = false;
     document.querySelectorAll('main > section').forEach(section => {
-        section.style.display = 'none';
+        if (section.id === sectionId) {
+            section.classList.add('section-active');
+            section.classList.remove('section-hidden'); // Optional: if using hidden class too
+            sectionFoundAndActivated = true;
+            console.log(`[Show Section] Activating: ${section.id}`);
+        } else {
+            section.classList.remove('section-active');
+            section.classList.add('section-hidden'); // Optional: if using hidden class too
+        }
     });
-    const activeSection = document.getElementById(sectionId);
-    if (activeSection) {
-        activeSection.style.display = 'block';
-    } else {
-        console.error("未找到要显示的区域:", sectionId);
+
+    if (!sectionFoundAndActivated) {
+        console.error("[Show Section] Section not found in main:", sectionId);
+        // Keep handling for elements outside main if needed (like forfeit button)
+        const outsideElement = document.getElementById(sectionId);
+        if (outsideElement && outsideElement.tagName === 'BUTTON') {
+            console.warn(`[Show Section] Element ${sectionId} found outside main, display not handled by class logic.`);
+            // Maybe manually toggle display here if needed for outside elements?
+            // outsideElement.style.display = 'inline-block'; // Example
+        } else if (sectionId !== 'forfeitGame') { // Avoid error for forfeit button if handled elsewhere
+            console.error("[Show Section] Element not found anywhere:", sectionId);
+        }
     }
+    // No need to handle viewRules listener dynamically here anymore
 }
 
 // 更新商店按钮状态
@@ -1135,9 +1273,9 @@ function setupEndAndHistoryButtons() {
         restartButton.replaceWith(restartButton.cloneNode(true));
         document.getElementById('restartGame').addEventListener('click', () => {
             console.log('[Restart Game] Clicked.');
-            // 修改：清除本地存储，重新初始化，显示开始界面
+            // 修改：清除本地存储，显示开始界面，但不调用 initGame()
             localStorage.removeItem('gameState');
-            initGame(); // 重置游戏状态
+            // initGame(); // <-- 移除这一行
             showSection('start-section'); // 显示开始界面
         });
     }
@@ -1316,51 +1454,62 @@ function nextFloor() {
     updateGameStatus(); // 更新按钮状态等 (应该会显示 completeTask 按钮)
 }
 
+// 定义 viewRules 按钮的处理函数 (现在由委托处理)
+/* function handleViewRulesClick() { ... } */
+
+// 定义 backToStart 按钮的处理函数 (保持不变)
+function handleBackToStartClick() {
+    console.log('[Back To Start Button] Clicked! (Using named handler)');
+    showSection('start-section');
+}
+
 // 初始化整个应用程序
 function initializeApp() {
+    console.log('[Initialize App] Function called!');
     console.log('Initializing application...');
 
     const loaded = loadGameState();
 
     if (loaded) {
         console.log('Game state loaded from localStorage.');
-
         // 优先处理游戏结束状态
         if (gameState.gamePhase === 'ended') {
-            console.log('Loaded state indicates game ended. Showing end section.');
-            // 更新结束界面信息
+            console.log('Loaded state indicates game ended. Activating end section.');
             document.getElementById('endScore').textContent = gameState.score;
             document.getElementById('maxFloorEnd').textContent = getDisplayFloor(gameState.maxFloor);
             document.getElementById('tasksCompletedEnd').textContent = gameState.tasksCompleted;
             document.getElementById('remainingClothesEnd').textContent = Object.values(gameState.clothing).filter(Boolean).length;
             document.getElementById('endingDescription').textContent = getEnding();
-            showSection('end-section');
+            showSection('end-section'); // Use showSection to handle class
             setupEndAndHistoryButtons();
-            return; // 结束初始化
+            return;
         }
-
         // 处理游戏进行中状态
         if (gameState.gamePhase === 'adventure') {
-            console.log(`Loaded state indicates game in adventure phase (Floor ${gameState.currentFloor}). Showing game section.`);
-            // 恢复UI状态 (代码保持不变)
+            console.log(`Loaded state indicates game in adventure phase. Activating game section.`);
             updateScore();
             updateFloor();
             updateClothingStatus();
             updateInventory();
-            updateGameStatus(); // 这会处理任务/上楼方式的显示
-            showSection('game-section');
+            updateGameStatus();
+            showSection('game-section'); // Use showSection to handle class
+        } else if (gameState.gamePhase === 'shop') { // 新增：明确处理商店状态
+            console.log(`Loaded state indicates game in shop phase. Activating shop section.`);
+            updateScore(); // 确保分数显示正确
+            updateInventory(); // 确保库存和按钮状态正确
+            showSection('shop-section'); // 显示商店界面
         } else {
-            // 其他所有状态 (shop, initial, 或未知) 或加载失败，都显示开始界面
-            console.log(`Loaded state phase is '${gameState.gamePhase}' or invalid. Showing start section.`);
-            showSection('start-section');
+            // 其他所有状态 -> 显示开始界面
+            console.log(`Loaded state phase is '${gameState.gamePhase}' or invalid. Activating start section.`);
+            showSection('start-section'); // Use showSection to handle class
         }
     } else {
-        // 没有找到保存的状态 -> 直接显示开始界面，不调用 initGame
-        console.log('No saved game state found. Showing start section.');
-        showSection('start-section');
+        // 没有找到保存的状态 -> 显示开始界面
+        console.log('No saved game state found. Activating start section.');
+        showSection('start-section'); // Use showSection to handle class
     }
 
-    // --- 事件监听器设置 --- (这部分代码应该在 if/else 之外，总是需要设置)
+    // --- 事件监听器设置 ---
     // 'startGame' 按钮监听器 (代码保持不变)
     document.getElementById('startGame').addEventListener('click', () => {
         console.log('点击开始游戏');
@@ -1371,14 +1520,51 @@ function initializeApp() {
         updateScore();
         showSection('shop-section');
     });
+
+    // 移除 viewRules 的直接监听器
+    /*
+    const viewRulesButton = document.getElementById('viewRules');
+    if (viewRulesButton) {
+        viewRulesButton.disabled = false;
+        viewRulesButton.addEventListener('click', handleViewRulesClick);
+        console.log('[Initialize App] Event listener attached directly to #viewRules button.');
+    } else {
+        console.error('[Initialize App] #viewRules button not found!');
+    }
+    */
+
+    // 最简单的 backToStart 监听器设置 (保持不变)
+    const backToStartButton = document.getElementById('backToStart');
+    if (backToStartButton) {
+        backToStartButton.disabled = false;
+        backToStartButton.removeEventListener('click', handleBackToStartClick); // 保留移除
+        backToStartButton.addEventListener('click', handleBackToStartClick);
+         console.log('[Initialize App] Event listener attached directly to #backToStart button.');
+    } else {
+        console.error('[Initialize App] #backToStart button not found!');
+    }
+
+    // 新增：使用事件委托处理 start-actions 内的点击
+    const startActionsContainer = document.querySelector('.start-actions');
+    if (startActionsContainer) {
+        startActionsContainer.addEventListener('click', (event) => {
+            console.log('[Start Actions Delegate] Click detected inside container. Target:', event.target);
+            // 检查被点击的是否是 viewRules 按钮
+            if (event.target && event.target.id === 'viewRules') {
+                console.log('[Start Actions Delegate] #viewRules button click delegated!');
+                showSection('rules-section');
+            }
+            // 这里可以添加对 startGame 按钮的委托处理（如果需要）
+            // if (event.target && event.target.id === 'startGame') { ... }
+        });
+        console.log('[Initialize App] Event listener attached to .start-actions for delegation.');
+    } else {
+        console.error('[Initialize App] .start-actions container not found for delegation!');
+    }
+
     // 其他按钮监听器 (viewRules, backToStart, startAdventure, completeTask, nextFloor, confirmClimbing, 商店购买按钮) (代码保持不变)
-    document.getElementById('viewRules').addEventListener('click', () => {
-        showSection('rules-section');
-    });
-    document.getElementById('backToStart').addEventListener('click', () => {
-        showSection('start-section');
-    });
-    document.getElementById('startAdventure').addEventListener('click', startAdventure);
+    const startAdventureButton = document.getElementById('startAdventure');
+    if(startAdventureButton) startAdventureButton.addEventListener('click', startAdventure);
     document.getElementById('completeTask').addEventListener('click', completeTask);
     document.getElementById('nextFloor').addEventListener('click', () => {
         const buttonText = document.getElementById('nextFloor').textContent;
@@ -1388,33 +1574,6 @@ function initializeApp() {
             nextFloor();
         } else {
             console.warn("[Next Floor Button] Unknown button text:", buttonText);
-        }
-    });
-    document.getElementById('confirmClimbing').addEventListener('click', () => {
-        // ... (confirmClimbing 逻辑保持不变)
-        const previousFloor = gameState.currentFloor;
-        if (![2, 5, 8].includes(previousFloor)) {
-            console.error("[Confirm Climbing] ERROR: Clicked on incorrect floor.");
-            return;
-        }
-        gameState.progressStepsCompleted++;
-        updateProgressBar();
-        let nextFloorValue = 0;
-        if (previousFloor === 2) nextFloorValue = 4;
-        else if (previousFloor === 5) nextFloorValue = 7;
-        else if (previousFloor === 8) nextFloorValue = 10;
-        gameState.currentFloor = nextFloorValue;
-        gameState.assignedClimbingTask = null;
-        if (gameState.currentFloor > gameState.maxFloor) {
-            gameState.maxFloor = gameState.currentFloor;
-        }
-        updateFloor();
-        if (gameState.currentFloor >= TOTAL_FLOORS_FOR_PROGRESS) {
-            endGame(`到达顶层 ${getDisplayFloor(TOTAL_FLOORS_FOR_PROGRESS)}！游戏结束！`);
-        } else {
-            generateNewTask();
-            updateGameStatus();
-            saveGameState();
         }
     });
 
@@ -1427,11 +1586,178 @@ function initializeApp() {
         });
     });
 
+    // 新增：放弃挑战按钮监听器
+    document.getElementById('forfeitGame').addEventListener('click', async () => {
+        // Swap button text meanings: Yes (green) = Continue, No (red) = Forfeit
+        const continueChallenge = await customConfirm( 
+            '你确定要放弃本次挑战吗？放弃后将直接进入结局判定。',
+            {
+                yesText: '继续挑战', // Green button text
+                noText: '确认放弃'   // Red button text
+            }
+        );
+        // If the result is false, it means they clicked the red "确认放弃" button
+        if (!continueChallenge) { 
+            console.log('[Forfeit Game] Player confirmed forfeit by clicking the red button.');
+            // **** 新增：在调用 endGame 前强制将分数归零 ****
+            gameState.score = 0;
+            console.log('[Forfeit Game] Score forced to 0.');
+            // **** 结束新增 ****
+            endGame('挑战已放弃！'); // Call endGame (now with score 0)
+        } else {
+             console.log('[Forfeit Game] Player chose to continue (clicked the green button).');
+        }
+    });
+
     // 设置结束和历史按钮 (代码保持不变)
     setupEndAndHistoryButtons();
 
     console.log("initializeApp complete.");
 }
 
-// 初始化整个应用程序
-initializeApp();
+// DOM加载完成后初始化应用
+document.addEventListener('DOMContentLoaded', () => {
+    originalConsole.log('[DOM Ready - Diagnostic] Event fired.'); // Use originalConsole here in case override failed
+
+    // ===== Debug Mode Activation Listener =====
+    originalConsole.log('[DOM Ready - Diagnostic] Setting up debug listeners...');
+    const gameTitle = document.getElementById('gameTitle');
+    originalConsole.log('[DOM Ready - Diagnostic] gameTitle element:', gameTitle ? 'Found' : 'NOT FOUND!');
+
+    const debugIndicator = document.getElementById('debug-mode-indicator');
+    const debugTerminal = document.getElementById('debug-terminal');
+    const debugOutput = document.getElementById('debug-log-output');
+    const clearDebugButton = document.getElementById('clearDebugLog');
+    const closeDebugButton = document.getElementById('closeDebugLog');
+    const copyDebugButton = document.getElementById('copyDebugLog'); // Get the new button
+
+    // Diagnostic: Add listener to header as well
+    const headerElement = document.querySelector('header');
+    if (headerElement) {
+        originalConsole.log('[DOM Ready - Diagnostic] Adding listener to HEADER element.');
+        headerElement.addEventListener('click', (event) => {
+            originalConsole.log('[DOM Ready - Diagnostic] HEADER clicked! Target:', event.target);
+        });
+    } else {
+        originalConsole.error('[DOM Ready - Diagnostic] Could not find HEADER element!');
+    }
+
+
+    if (gameTitle && debugIndicator && debugTerminal) {
+        originalConsole.log('[DOM Ready - Diagnostic] Attempting to add click listener to gameTitle.');
+        gameTitle.addEventListener('click', () => {
+            if (debugModeActive) {
+                // If already active, toggle the terminal visibility
+                if (debugTerminal) {
+                    debugTerminal.classList.toggle('debug-visible');
+                    console.log(`[Debug Activation] Toggled terminal visibility. Visible: ${debugTerminal.classList.contains('debug-visible')}`);
+                }
+                return; // Don't count clicks anymore
+            }
+
+            // If not active, count clicks to activate
+            titleClickCount++;
+            console.log(`[Debug Activation] Title clicked ${titleClickCount}/${DEBUG_CLICKS_NEEDED} times.`);
+
+            if (titleClickCount >= DEBUG_CLICKS_NEEDED) {
+                debugModeActive = true; // <--- Set active FIRST
+                console.log('--- DEBUG MODE ACTIVATED ---'); // Log activation (will now go to buffer if logged before emptying)
+
+                // --- 新增：输出缓冲日志 ---
+                originalConsole.log('[Debug Activation] Flushing log buffer...');
+                const outputDiv = document.getElementById('debug-log-output');
+                if (outputDiv) { // Ensure output div exists before flushing
+                     logBuffer.forEach(entry => {
+                         // Manually create log entry for buffered items
+                         const logEntry = document.createElement('p');
+                         const messageParts = [];
+                         // Add timestamp to buffered logs
+                         messageParts.push(`[${entry.timestamp.toLocaleTimeString()}.${entry.timestamp.getMilliseconds().toString().padStart(3,'0')}]`);
+                         for (const arg of entry.args) {
+                             if (typeof arg === 'object' && arg !== null) {
+                                 try { messageParts.push(JSON.stringify(arg, null, 2)); } catch (e) { messageParts.push('[Unserializable Object]'); }
+                             } else { messageParts.push(String(arg)); }
+                         }
+                         logEntry.textContent = messageParts.join(' ');
+                         if (entry.type === 'warn') logEntry.classList.add('log-warn');
+                         if (entry.type === 'error') logEntry.classList.add('log-error');
+                         outputDiv.appendChild(logEntry);
+                     });
+                     // Auto-scroll after flushing
+                     outputDiv.scrollTop = outputDiv.scrollHeight;
+                }
+                logBuffer = []; // Clear the buffer
+                originalConsole.log('[Debug Activation] Log buffer flushed.');
+                // --- 结束新增 ---
+
+                debugIndicator.style.display = 'inline';
+                debugTerminal.classList.add('debug-visible');
+                showAlert('Debug Mode Activated!');
+                // Log activation message AGAIN, this time it will definitely go to the visible terminal
+                console.log('--- DEBUG MODE ACTIVATED (Terminal Ready) ---');
+
+            }
+            /*
+            // Optional: Timeout reset (currently commented out)
+            setTimeout(() => {
+                 if (!debugModeActive) titleClickCount = 0;
+            }, 1500);
+            */
+        });
+        originalConsole.log('[DOM Ready - Diagnostic] Listener potentially added to gameTitle.');
+    } else {
+        originalConsole.error('[Debug Setup] Could not find title, indicator, or terminal element for debug mode.');
+    }
+
+    // Debug terminal button listeners
+    originalConsole.log('[DOM Ready - Diagnostic] Setting up debug terminal button listeners...');
+    if (copyDebugButton && debugOutput) { // Add listener for copy button
+        originalConsole.log('[DOM Ready - Diagnostic] Found copyDebugButton and debugOutput. Adding listener.');
+        copyDebugButton.addEventListener('click', () => {
+            console.log('[Debug Button] Copy button clicked.');
+            const logText = debugOutput.textContent;
+            navigator.clipboard.writeText(logText)
+                .then(() => {
+                    console.log('[Debug Log] Copied to clipboard successfully.');
+                    showAlert('日志已复制到剪贴板！'); // Confirmation message
+                })
+                .catch(err => {
+                    console.error('[Debug Log] Failed to copy logs:', err);
+                    showAlert('复制日志失败！请手动复制。');
+                });
+        });
+    } else {
+         originalConsole.error('[DOM Ready - Diagnostic] Could not find copyDebugButton or debugOutput!');
+    }
+
+    if(clearDebugButton && debugOutput) {
+        originalConsole.log('[DOM Ready - Diagnostic] Found clearDebugButton and debugOutput. Adding listener.');
+        clearDebugButton.addEventListener('click', () => {
+            console.log('[Debug Button] Clear button clicked.');
+            debugOutput.innerHTML = '';
+            console.log('[Debug Log] Cleared.');
+        });
+    } else {
+         originalConsole.error('[DOM Ready - Diagnostic] Could not find clearDebugButton or debugOutput!');
+    }
+
+     if(closeDebugButton && debugTerminal) {
+        originalConsole.log('[DOM Ready - Diagnostic] Found closeDebugButton and debugTerminal. Adding listener.');
+        closeDebugButton.addEventListener('click', () => {
+            console.log('[Debug Button] Close button clicked.'); // Log inside handler
+            debugTerminal.classList.remove('debug-visible');
+            console.log('[Debug Button] Removed debug-visible class from terminal.'); // Log after action
+            // Optionally deactivate debug mode fully on close?
+            // debugModeActive = false;
+            // debugIndicator.style.display = 'none';
+            // titleClickCount = 0;
+        });
+    } else {
+         originalConsole.error('[DOM Ready - Diagnostic] Could not find closeDebugButton or debugTerminal!');
+    }
+    // ===== End Debug Mode Activation =====
+
+    // Use overridden console log from here on if needed
+    console.log('[DOM Ready] Initializing app...');
+    initializeApp(); // Initialize the main application AFTER setting up debug listeners/overrides
+});

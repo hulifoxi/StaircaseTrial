@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>楼道试炼</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,7 +10,8 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <h1>楼道羞耻暴露挑战</h1>
+                <h1 id="gameTitle">楼道羞耻暴露挑战</h1>
+                <span id="debug-mode-indicator" style="display: none; color: orange; margin-left: 10px; font-size: 0.8em;">[Debug Mode Active]</span>
                 <p class="subtitle">By <a href="https://x.com/dehaxer" target="_blank" rel="noopener noreferrer">Emand</a></p>
             </div>
             <!-- 通用积分显示区域，可以在特定section中添加或修改 -->
@@ -265,6 +266,9 @@
 
         </main>
 
+        <!-- 放弃按钮放在 main 外部或末尾，便于固定定位 -->
+        <button id="forfeitGame" class="game-button forfeit-button fixed-bottom-right" style="display: none;">放弃挑战</button>
+
         <!-- 通用模态框 -->
         <div class="modal" id="taskModal">
             <div class="modal-content">
@@ -287,6 +291,19 @@
 
         <!-- 新增：动态警告消息容器 -->
         <div id="alertContainer"></div>
+
+        <!-- 修改：将 Debug 终端移到 container 内部 -->
+        <div id="debug-terminal" class="debug-hidden">
+            <div class="debug-header">
+                <span>Debug Log</span>
+                <div>
+                    <button id="copyDebugLog" title="复制所有日志">Copy</button>
+                    <button id="clearDebugLog" title="清空日志">Clear</button>
+                    <button id="closeDebugLog" title="关闭日志窗口">Close</button>
+                </div>
+            </div>
+            <div id="debug-log-output"></div>
+        </div>
 
     </div>
     <script src="script.js"></script>

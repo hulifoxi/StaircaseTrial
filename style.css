@@ -103,6 +103,7 @@ header {
     font-size: 1.1em;
 }
 
+/* Section Visibility Control */
 main > section {
     display: none; /* Hide all sections by default */
     padding: 20px;
@@ -111,8 +112,8 @@ main > section {
     /* margin-top: 20px; */ /* Removed, handled by container padding */
 }
 
-#start-section {
-    display: block; /* Show start section initially */
+.section-active {
+    display: block !important; /* Use !important to override default if needed */
 }
 
 /* General Headings */
@@ -346,6 +347,17 @@ button:disabled {
     align-items: center; /* Center items */
     gap: 20px; /* Space between items */
     margin-top: 30px;
+    position: relative; /* Establish stacking context */
+    z-index: 10; /* Ensure it's above other relative content in the section */
+}
+
+#viewRules {
+    position: relative; /* Ensure it participates in stacking */
+    z-index: 99 !important; /* Force a very high z-index within its context */
+    pointer-events: auto !important; /* Force allow pointer events */
+    visibility: visible !important; /* Force visibility */
+    opacity: 1 !important; /* Force opacity */
+    /* background-color: lime !important; */ /* Optional: Uncomment for visual debug */
 }
 
 /* Input/Select Styles */
@@ -1404,3 +1416,135 @@ select:focus {
 } */
 
 /* --- Mobile adjustments for progress bar --- */
+
+.forfeit-button {
+    background-color: var(--danger);
+}
+.forfeit-button:hover:not(:disabled) {
+    background-color: #e8838c; /* Lighter red */
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+    display: block; /* Needed for text-align to work properly on span */
+    width: 100%;
+}
+
+.fixed-bottom-right {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 999; /* Ensure it's above most content but below modals */
+}
+
+/* Forfeit Button Specific Styles */
+#forfeitGame {
+    background-color: var(--danger);
+    padding: 8px 15px; /* Smaller padding for fixed button */
+    font-size: 0.9em; /* Smaller font size */
+    box-shadow: var(--box-shadow-medium); /* Slightly stronger shadow */
+}
+#forfeitGame:hover:not(:disabled) {
+    background-color: #e8838c; /* Lighter red */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Stronger hover shadow */
+}
+
+/* ===== Debug Mode Styles ===== */
+#debug-mode-indicator {
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+#debug-terminal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px; /* Adjust height as needed */
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #ccc;
+    border-top: 2px solid #444;
+    box-sizing: border-box;
+    z-index: 1000; /* Ensure it's on top */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(100%); /* Start hidden below screen */
+}
+
+#debug-terminal.debug-visible {
+    transform: translateY(0); /* Slide in */
+}
+
+.debug-header {
+    background-color: #222;
+    padding: 5px 10px;
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.debug-header span {
+    font-weight: bold;
+    color: orange;
+}
+
+.debug-header button {
+    background: #555;
+    color: #eee;
+    border: 1px solid #777;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.debug-header button:hover {
+    background: #777;
+}
+
+
+#debug-log-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 8px;
+    white-space: pre-wrap; /* Allow wrapping */
+    word-break: break-all; /* Break long strings */
+}
+
+#debug-log-output p {
+    margin: 0 0 4px 0;
+    padding-bottom: 2px;
+    border-bottom: 1px dotted #333;
+}
+#debug-log-output p:last-child {
+    border-bottom: none;
+}
+
+#debug-log-output .log-warn {
+    color: #ffdd57; /* Yellow */
+}
+
+#debug-log-output .log-error {
+    color: #ff6b6b; /* Red */
+    font-weight: bold;
+}
+
+/* 确保在所有 section 隐藏时，debug terminal 仍然可见 */
+#debug-terminal {
+    /* Style already makes it visible regardless of main > section display */
+}
+
+h1#gameTitle {
+    /* Add styles specifically for the game title if needed, */
+    /* like overriding margin or font size from general h1 */
+    user-select: none; /* Prevent text selection */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    cursor: default; /* Ensure default cursor, not text input */
+}
